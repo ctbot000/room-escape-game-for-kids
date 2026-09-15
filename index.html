@@ -9,86 +9,162 @@
   *,*::before,*::after{box-sizing:border-box}
   [hidden]{display:none !important}
   :root{
-    --bg:#1a1033; --bg2:#2a1b52; --panel:#fffdf7; --ink:#2b2340;
-    --gold:#ffc93c; --pink:#ff7eb6; --mint:#3ddc97; --sky:#5ec8ff;
-    --shadow:0 8px 0 rgba(0,0,0,.18);
+    /* ink + paper: a dark gallery, warm paper panels, one amber accent */
+    --bg:#0b0e14; --bg2:#151b26;
+    --panel:#f7f4ed; --panel2:#ebe6db; --panel3:#dfd8ca;
+    --ink:#161a21; --ink2:#59616e; --ink3:#8a929e;
+    --line:rgba(22,26,33,.16); --line2:rgba(22,26,33,.09);
+    --gold:#cf9b3c; --gold2:#a87a24;
+    --accent:#3d6db3; --accent2:#2f568d;
+    --mint:#2f8f6b; --sky:#3d6db3; --pink:#b4527f; --bad:#b9553f;
+    --r:10px; --r2:14px; --r3:20px;
+    --shadow:0 1px 2px rgba(0,0,0,.28), 0 10px 30px -12px rgba(0,0,0,.55);
+    --shadow-sm:0 1px 2px rgba(22,26,33,.10);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,ui-serif,serif;
   }
   html,body{height:100%}
   body{
-    margin:0; font-family:"Baloo 2",Verdana,"Trebuchet MS",system-ui,sans-serif;
-    background:radial-gradient(120% 90% at 50% 0%,var(--bg2),var(--bg));
-    color:var(--ink); min-height:100%; padding:12px;
+    margin:0; font-family:var(--font); font-size:15px; line-height:1.45;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #1b2331 0%, transparent 60%),
+      linear-gradient(180deg,#0e131b 0%, var(--bg) 100%);
+    background-attachment:fixed;
+    color:var(--ink); min-height:100%; padding:14px;
     display:flex; flex-direction:column; align-items:center; gap:12px;
+    -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3{margin:0}
+  h1,h2,h3{margin:0; font-family:var(--serif); font-weight:600; letter-spacing:-.01em}
   button{font:inherit; cursor:pointer; border:none; background:none; color:inherit}
+  :focus-visible{outline:2px solid var(--gold); outline-offset:2px}
 
-  .wrap{width:100%; max-width:900px; display:flex; flex-direction:column; gap:12px}
+  .wrap{width:100%; max-width:860px; display:flex; flex-direction:column; gap:12px}
 
+  /* ---------- header ---------- */
   header.hud{
-    display:flex; flex-wrap:wrap; align-items:center; gap:10px;
-    background:var(--panel); border-radius:18px; padding:10px 14px; box-shadow:var(--shadow);
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;
+    background:linear-gradient(180deg,var(--panel) 0%, var(--panel2) 100%);
+    border:1px solid var(--line); border-radius:var(--r2);
+    padding:10px 14px; box-shadow:var(--shadow);
   }
-  .title{font-size:20px; font-weight:800; letter-spacing:.5px}
-  .title .star{color:#e8a300}
-  .roomname{font-size:15px; background:#efe9ff; border-radius:999px; padding:4px 12px; font-weight:700}
-  .prog{margin-left:auto; display:flex; align-items:center; gap:8px; min-width:150px}
-  .bar{flex:1; height:14px; background:#efe9ff; border-radius:999px; overflow:hidden; min-width:70px}
-  .bar i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--gold),#ff9f5a);
-    border-radius:999px; transition:width .5s}
-  .count{font-weight:800; font-size:15px; white-space:nowrap}
+  .brand{font-family:var(--serif); font-size:17px; font-weight:600; letter-spacing:.01em; white-space:nowrap}
+  .brand .star{color:var(--gold)}
+  .where{display:flex; align-items:baseline; gap:8px; min-width:0; flex-wrap:wrap}
+  .roomno{font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--ink3)}
+  .roomname{font-size:15px; font-weight:600}
+  .tier{font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--gold2); border:1px solid rgba(207,155,60,.4); background:rgba(207,155,60,.10);
+    border-radius:999px; padding:2px 8px}
+  .prog{margin-left:auto; display:flex; align-items:center; gap:9px; min-width:140px}
+  .bar{flex:1; height:6px; background:var(--panel3); border-radius:999px; overflow:hidden; min-width:64px}
+  .bar i{display:block; height:100%; width:0; border-radius:999px;
+    background:linear-gradient(90deg,var(--gold2),var(--gold)); transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .count{font-weight:600; font-size:13px; white-space:nowrap; color:var(--ink2);
+    font-variant-numeric:tabular-nums}
 
-  .stage{position:relative; width:100%; aspect-ratio:4/3; max-height:62vh;
-    border-radius:22px; overflow:hidden; box-shadow:var(--shadow); background:#000}
+  /* ---------- stage ---------- */
+  .stage{position:relative; width:100%; aspect-ratio:4/3; max-height:60vh;
+    border-radius:var(--r2); overflow:hidden; background:#05070b;
+    border:1px solid rgba(255,255,255,.07); box-shadow:var(--shadow)}
+  .stage::after{content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+    box-shadow:inset 0 0 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05)}
   .stage svg{position:absolute; inset:0; width:100%; height:100%; display:block}
-  .hot{cursor:pointer}
-  .hot:hover{filter:brightness(1.12) drop-shadow(0 0 8px rgba(255,255,255,.85))}
-  .hot:focus-visible{outline:3px solid #fff; outline-offset:2px}
+  .hot{cursor:pointer; transition:filter .18s ease}
+  .hot:hover{filter:brightness(1.10) drop-shadow(0 0 6px rgba(207,155,60,.55))}
+  .hot:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
 
-  .say{background:var(--panel); border-radius:18px; padding:12px 16px; box-shadow:var(--shadow);
-    font-size:17px; font-weight:700; min-height:56px; display:flex; align-items:center; gap:10px}
-  .say .face{font-size:24px}
+  /* ---------- narration ---------- */
+  .say{background:linear-gradient(180deg,var(--panel) 0%, var(--panel2) 100%);
+    border:1px solid var(--line); border-radius:var(--r2); padding:11px 15px; box-shadow:var(--shadow);
+    font-size:15px; min-height:52px; display:flex; align-items:center; gap:11px; color:var(--ink)}
+  .say .face{font-size:20px; flex:none; opacity:.9; padding-right:11px;
+    border-right:1px solid var(--line2)}
 
-  .bag{display:flex; align-items:center; gap:8px; flex-wrap:wrap;
-    background:rgba(255,255,255,.12); border-radius:18px; padding:8px 12px; color:#fff}
-  .bag .label{font-weight:800; font-size:14px; letter-spacing:1px; opacity:.85}
-  .item{font-size:24px; background:var(--panel); border-radius:12px; padding:4px 8px; box-shadow:0 3px 0 rgba(0,0,0,.25)}
+  /* ---------- inventory ---------- */
+  .bag{display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+    background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.08);
+    border-radius:var(--r2); padding:8px 12px; color:rgba(255,255,255,.75)}
+  .bag .label{font-weight:700; font-size:10px; letter-spacing:.14em; text-transform:uppercase; opacity:.65}
+  .item{font-size:18px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08);
+    border-radius:8px; padding:3px 6px; line-height:1; transition:transform .15s ease}
+  .item:hover{transform:translateY(-1px)}
 
-  .scrim{position:fixed; inset:0; background:rgba(12,6,30,.72); display:flex;
-    align-items:center; justify-content:center; padding:16px; z-index:20; overflow:auto}
-  .card{background:var(--panel); border-radius:24px; padding:20px; width:min(470px,100%);
-    box-shadow:0 12px 0 rgba(0,0,0,.3); text-align:center; margin:auto}
-  .card h2{font-size:22px; margin-bottom:6px}
-  .card p{font-size:16px; margin:8px 0 14px}
-  .btn{background:var(--mint); color:#0d3a29; font-weight:800; border-radius:999px;
-    padding:10px 22px; box-shadow:0 4px 0 #23a874; font-size:17px}
-  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 #23a874}
-  .btn.alt{background:var(--sky); box-shadow:0 4px 0 #2a92c9; color:#06364f}
-  .btn.ghost{background:#efe9ff; box-shadow:0 4px 0 #cdc2f0; color:#3a2f5e}
+  /* ---------- dialog ---------- */
+  .scrim{position:fixed; inset:0; background:rgba(6,8,12,.66); backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+    display:flex; align-items:center; justify-content:center; padding:16px; z-index:20; overflow:auto}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r3);
+    padding:22px 20px 18px; width:min(460px,100%); box-shadow:0 30px 70px -20px rgba(0,0,0,.7);
+    text-align:center; margin:auto; animation:rise .22s cubic-bezier(.2,.7,.3,1)}
+  @keyframes rise{from{opacity:0; transform:translateY(10px) scale(.985)}}
+  .card h2{font-size:21px; line-height:1.25; margin-bottom:4px}
+  .card h2::after{content:""; display:block; width:34px; height:2px; background:var(--gold);
+    border-radius:2px; margin:10px auto 0; opacity:.85}
+  .card p{font-size:15px; margin:10px 0 14px; color:var(--ink2)}
+  .card p b{color:var(--ink)}
 
-  .pad{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px auto; max-width:260px}
-  .pad button{background:#efe9ff; border-radius:14px; padding:12px 0; font-size:22px; font-weight:800;
-    box-shadow:0 4px 0 #cdc2f0}
-  .pad button:active{transform:translateY(3px); box-shadow:0 1px 0 #cdc2f0}
-  .screen{font-size:34px; letter-spacing:10px; font-weight:800; background:#2b2340; color:var(--gold);
-    border-radius:14px; padding:8px; min-height:52px}
-  .row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:10px 0}
-  .big{font-size:40px; background:#efe9ff; border-radius:18px; padding:10px 14px; box-shadow:0 5px 0 #cdc2f0;
-    line-height:1.1; min-width:70px}
-  .big:active{transform:translateY(3px); box-shadow:0 2px 0 #cdc2f0}
-  .big.picked{outline:4px solid var(--pink)}
-  .big.lit{outline:5px solid var(--gold); transform:scale(1.12); filter:brightness(1.3)}
-  .clue{font-size:34px; letter-spacing:6px}
-  .msg{font-size:19px; min-height:30px; font-weight:700}
-  .shake{animation:sh .4s}
-  @keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-  .pop{animation:pp .5s}
-  @keyframes pp{50%{transform:scale(1.18)}}
+  /* ---------- buttons ---------- */
+  .btn{background:var(--ink); color:#f7f4ed; font-weight:600; border-radius:999px;
+    padding:9px 20px; font-size:15px; border:1px solid transparent;
+    box-shadow:var(--shadow-sm); transition:transform .12s ease, background .18s ease, box-shadow .18s ease}
+  .btn:hover{background:#252b35}
+  .btn:active{transform:translateY(1px)}
+  .btn.alt{background:var(--panel); color:var(--ink); border-color:var(--line)}
+  .btn.alt:hover{background:#fff}
+  .btn.ghost{background:transparent; color:var(--ink2); border-color:var(--line)}
+  .btn.ghost:hover{background:rgba(22,26,33,.05)}
 
-  .map{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:12px 0}
-  .map b{background:#efe9ff; border-radius:12px; padding:8px 0; font-size:19px; font-weight:800}
-  .map b.done{background:var(--gold)}
-  .map b.now{outline:3px solid var(--pink)}
+  /* ---------- shared puzzle furniture ---------- */
+  .pad{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin:12px auto; max-width:250px}
+  .pad button{background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+    padding:11px 0; font-size:19px; font-weight:600; color:var(--ink);
+    box-shadow:var(--shadow-sm); font-variant-numeric:tabular-nums; transition:background .15s ease}
+  .pad button:hover{background:#fff}
+  .pad button:active{transform:translateY(1px)}
+  .screen{font-size:28px; letter-spacing:8px; font-weight:600; background:var(--ink); color:var(--gold);
+    border-radius:var(--r); padding:10px; min-height:48px; font-variant-numeric:tabular-nums}
+  .row{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:12px 0}
+  .big{font-size:30px; background:var(--panel); border:1px solid var(--line); border-radius:var(--r2);
+    padding:9px 13px; box-shadow:var(--shadow-sm); line-height:1.1; min-width:60px; color:var(--ink);
+    transition:background .15s ease, border-color .15s ease}
+  .big:hover{background:#fff}
+  .big:active{transform:translateY(1px)}
+  .big small{font-size:11px; font-weight:700; color:var(--ink3); letter-spacing:.04em}
+  .big.picked{border-color:var(--pink); box-shadow:0 0 0 2px rgba(180,82,127,.22)}
+  .big.lit{border-color:var(--gold); box-shadow:0 0 0 3px rgba(207,155,60,.3); transform:scale(1.06)}
+  .clue{font-size:27px; letter-spacing:5px; font-family:var(--serif); color:var(--ink)}
+  .msg{font-size:14px; min-height:26px; color:var(--ink2); font-weight:500}
+
+  .shake{animation:sh .34s}
+  @keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .pop{animation:pp .4s}
+  @keyframes pp{50%{transform:scale(1.12)}}
+
+  /* ---------- room map ---------- */
+  .maptiers{display:flex; flex-direction:column; gap:9px; margin:14px 0 4px; text-align:left}
+  .maprow{display:grid; grid-template-columns:86px 1fr; gap:9px; align-items:center}
+  .maprow .tname{font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--ink3); text-align:right; line-height:1.2}
+  .maprow .tcells{display:grid; grid-template-columns:repeat(10,1fr); gap:3px}
+  .maprow b{background:var(--panel2); border:1px solid var(--line2); border-radius:4px;
+    height:20px; display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; color:var(--ink3); font-variant-numeric:tabular-nums}
+  .maprow b.done{background:var(--gold); border-color:var(--gold2); color:#3a2a08}
+  .maprow b.now{outline:2px solid var(--ink); outline-offset:1px}
+
+  .tally{display:grid; grid-template-columns:auto auto; gap:2px 12px; justify-content:center;
+    align-items:baseline; margin:14px 0 10px}
+  .tally b{font-family:var(--serif); font-size:40px; line-height:1; color:var(--gold2);
+    text-align:right; font-variant-numeric:tabular-nums}
+  .tally span{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3);
+    text-align:left; align-self:center}
+  .tierlist{display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin:12px 0 4px}
+  .tierlist span{font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--gold2);
+    border:1px solid rgba(207,155,60,.35); border-radius:999px; padding:2px 7px}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important}
+  }
 
   .conf{position:fixed; inset:0; pointer-events:none; z-index:30; overflow:hidden}
   .conf i{position:absolute; top:-24px; font-size:22px; animation:fall linear forwards}
@@ -96,19 +172,19 @@
 
   /* advanced-room puzzle bits */
   .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; max-width:250px; margin:10px auto}
-  .grid4 div{aspect-ratio:1; background:#efe9ff; border-radius:10px; display:flex; align-items:center;
+  .grid4 div{aspect-ratio:1; background:var(--panel2); border-radius:10px; display:flex; align-items:center;
     justify-content:center; font-size:26px}
   .grid4 div.wall{background:#6b5a48}
-  .grid4 button{aspect-ratio:1; background:#fff; border-radius:10px; border:3px dashed #cdc2f0; font-size:26px}
+  .grid4 button{aspect-ratio:1; background:#fff; border-radius:10px; border:1px dashed var(--line); font-size:26px}
   .grid4 div.on,.grid4 button.on{background:#3ddc97; border-style:solid}
-  .queue{font-size:22px; letter-spacing:3px; background:#efe9ff; border-radius:12px; padding:8px; min-height:42px}
+  .queue{font-size:22px; letter-spacing:3px; background:var(--panel2); border-radius:var(--r); padding:8px; min-height:42px}
   .dpad{display:grid; grid-template-columns:repeat(3,58px); grid-template-rows:repeat(2,58px);
     gap:6px; justify-content:center; margin:10px auto}
-  .dpad button{background:#efe9ff; border-radius:14px; font-size:26px; box-shadow:0 4px 0 #cdc2f0}
-  .dpad button:active{transform:translateY(3px); box-shadow:0 1px 0 #cdc2f0}
+  .dpad button{background:var(--panel2); border-radius:var(--r); font-size:26px; box-shadow:var(--shadow-sm)}
+  .dpad button:active{transform:translateY(3px); box-shadow:var(--shadow-sm)}
   .lamps{display:flex; gap:8px; justify-content:center; margin:12px 0}
-  .lamps button{font-size:38px; border-radius:14px; padding:6px 10px; background:#2b2340; box-shadow:0 4px 0 #14102a}
-  .lamps button.on{background:#ffd93d; box-shadow:0 4px 0 #c9a520}
+  .lamps button{font-size:38px; border-radius:var(--r); padding:6px 10px; background:var(--ink); box-shadow:var(--shadow-sm)}
+  .lamps button.on{background:#ffd93d; box-shadow:var(--shadow-sm)}
   .mini{font-size:15px; opacity:.8; margin-top:4px}
 
   /* master-tier puzzle bits */
@@ -116,25 +192,25 @@
   .gridp.g4{grid-template-columns:repeat(4,58px)}
   .gridp.g3{grid-template-columns:repeat(3,58px)}
   .gridp button,.gridp div{width:58px; height:58px; border-radius:10px; background:#fff;
-    border:2px solid #cdc2f0; font-size:24px; font-weight:800; color:#3a2f5e;
+    border:1px solid var(--line); font-size:24px; font-weight:800; color:var(--ink);
     display:flex; align-items:center; justify-content:center; padding:0}
-  .gridp div.fixed{background:#cdc2f0; border-color:#b3a4e6}
+  .gridp div.fixed{background:var(--panel3); border-color:#b3a4e6}
   .gridp button.seen{background:#ffe0e0; border-color:#ff9c9c}
   .gridp button.can{background:#d7f7e9; border-color:#3ddc97}
-  .gridp div.gap{background:transparent; border:2px dashed #cdc2f0}
+  .gridp div.gap{background:transparent; border:1px dashed var(--line)}
   .pipewrap{display:flex; align-items:center; justify-content:center; gap:4px}
   .pipewrap span{font-size:24px}
   .pegs{display:flex; gap:10px; justify-content:center; margin:12px 0}
-  .pegs .peg{position:relative; width:86px; height:112px; background:#efe9ff; border-radius:12px;
+  .pegs .peg{position:relative; width:86px; height:112px; background:var(--panel2); border-radius:var(--r);
     display:flex; flex-direction:column; justify-content:flex-end; align-items:center; padding-bottom:6px}
-  .pegs .peg.sel{outline:4px solid var(--pink)}
+  .pegs .peg.sel{outline:2px solid var(--pink)}
   .pegs .rod{position:absolute; top:10px; width:8px; height:86px; background:#c9a24a; border-radius:4px}
   .pegs .rings{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:3px}
   .pegs i{display:block; height:14px; border-radius:7px}
   #heldbox{min-height:20px; display:flex; justify-content:center}
   #heldbox i{display:block; height:14px; border-radius:7px}
   .banks{display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0}
-  .banks .bank{flex:1; background:#efe9ff; border-radius:14px; padding:8px 4px; min-width:0}
+  .banks .bank{flex:1; background:var(--panel2); border-radius:var(--r); padding:8px 4px; min-width:0}
   .banks .bank b{font-size:13px; opacity:.7; display:block}
   .banks .stuff{font-size:26px; min-height:36px}
   .banks .you{font-size:20px}
@@ -145,31 +221,31 @@
   .mmrow{display:flex; gap:5px; align-items:center; justify-content:center; margin:4px 0}
   .mmrow i{width:26px; height:26px; border-radius:50%; display:block}
   .pegs2{font-size:14px; letter-spacing:1px; margin-left:6px}
-  .slot2{width:34px; height:34px; border-radius:50%; background:#efe9ff; border:3px solid #cdc2f0; display:inline-block}
+  .slot2{width:34px; height:34px; border-radius:50%; background:var(--panel2); border:1px solid var(--line); display:inline-block}
   .gridp div.target{background:#fff2cc; border-color:#e8c07a}
-  .gridp button.head{outline:3px solid var(--pink)}
+  .gridp button.head{outline:2px solid var(--pink)}
   .gridp button.start{background:#d7f7e9}
   .gridp button.endcell{background:#ffe0e0}
   .gridp button.on{background:#cdefff; border-color:#5ec8ff}
   .nono{--nc:42px; display:inline-grid; grid-template-columns:44px repeat(5,var(--nc)); gap:4px; margin:8px auto}
-  .nono .nc{font-size:13px; font-weight:800; color:#5a4f86; display:flex; align-items:center; justify-content:center}
+  .nono .nc{font-size:13px; font-weight:800; color:var(--ink2); display:flex; align-items:center; justify-content:center}
   .nono .nc.side{justify-content:flex-end; padding-right:4px}
   .nono .nc.top{align-items:flex-end; min-height:34px}
-  .nono .ncell{width:var(--nc); height:var(--nc); border-radius:8px; background:#fff; border:2px solid #cdc2f0}
-  .nono .ncell.on{background:#3a2f5e; border-color:#3a2f5e}
-  .bigtime{font-size:26px; font-weight:800; background:#2b2340; color:var(--gold);
-    border-radius:14px; padding:8px; margin:10px auto; max-width:200px}
+  .nono .ncell{width:var(--nc); height:var(--nc); border-radius:8px; background:#fff; border:1px solid var(--line)}
+  .nono .ncell.on{background:var(--ink); border-color:var(--ink)}
+  .bigtime{font-size:26px; font-weight:800; background:var(--ink); color:var(--gold);
+    border-radius:var(--r); padding:8px; margin:10px auto; max-width:200px}
   .jugs{display:flex; gap:22px; justify-content:center; align-items:flex-end; margin:10px 0}
   .jug{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:14px}
   .qlist{display:flex; flex-direction:column; gap:8px; margin:10px 0}
-  .qbtn{background:#efe9ff; border-radius:14px; padding:10px 12px; font-size:15px; text-align:left;
-    box-shadow:0 3px 0 #cdc2f0; line-height:1.35}
+  .qbtn{background:var(--panel2); border-radius:var(--r); padding:10px 12px; font-size:15px; text-align:left;
+    box-shadow:var(--shadow-sm); line-height:1.35}
   .coins{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-width:280px; margin:10px auto}
-  .coin{background:#efe9ff; border-radius:12px; padding:6px 0; font-size:24px; box-shadow:0 3px 0 #cdc2f0;
+  .coin{background:var(--panel2); border-radius:var(--r); padding:6px 0; font-size:24px; box-shadow:var(--shadow-sm);
     display:flex; flex-direction:column; align-items:center; line-height:1}
   .coin small{font-size:12px; font-weight:800}
-  .coin.p1{background:#cdefff; box-shadow:0 3px 0 #7cc4e8}
-  .coin.p2{background:#ffe6c7; box-shadow:0 3px 0 #e8b878}
+  .coin.p1{background:#cdefff; box-shadow:var(--shadow-sm)}
+  .coin.p2{background:#ffe6c7; box-shadow:var(--shadow-sm)}
 
   /* legend-tier puzzle bits */
   .gridp.g5{grid-template-columns:repeat(5,46px)}
@@ -178,44 +254,44 @@
   .zebra{display:inline-grid; grid-template-columns:64px repeat(3,54px); gap:5px; margin:10px auto}
   .zebra .zl{font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:flex-end; padding-right:4px}
   .zebra .zh{font-size:14px; font-weight:800; display:flex; align-items:center; justify-content:center}
-  .zebra button{height:50px; border-radius:10px; background:#fff; border:2px solid #cdc2f0; font-size:24px}
+  .zebra button{height:50px; border-radius:10px; background:#fff; border:1px solid var(--line); font-size:24px}
   .sum{font-family:ui-monospace,Menlo,monospace; margin:10px auto; display:inline-block; text-align:right}
   .sum div{display:flex; gap:4px; justify-content:flex-end; align-items:center}
-  .sum i{width:32px; height:38px; border-radius:6px; background:#efe9ff; font-style:normal;
+  .sum i{width:32px; height:38px; border-radius:6px; background:var(--panel2); font-style:normal;
     font-size:22px; font-weight:800; display:flex; align-items:center; justify-content:center}
   .sum b{font-size:20px; margin-right:4px}
-  .sum hr{border:none; border-top:3px solid #3a2f5e; margin:5px 0}
+  .sum hr{border:none; border-top:2px solid var(--ink); margin:6px 0}
   .tubes{display:flex; gap:10px; justify-content:center; margin:12px 0}
   .tube{background:#e8f4fb; border:3px solid #9fc4d6; border-radius:8px 8px 18px 18px; padding:5px 4px;
     display:flex; flex-direction:column; gap:4px}
   .tube i{width:26px; height:26px; border-radius:50%; display:block; background:#cfe0ea}
   .tube i.empty{background:transparent; border:2px dashed #cfe0ea}
-  .tube.picked{outline:4px solid var(--pink)}
+  .tube.picked{outline:2px solid var(--pink)}
   .sticks{display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin:10px auto; max-width:250px}
   .sticks i{display:block; width:7px; height:34px; border-radius:3px;
     background:linear-gradient(#c44 0 7px,#e8d5a8 7px 100%)}
   .tri{display:flex; flex-direction:column; align-items:center; gap:6px; margin:12px 0}
   .trirow{display:flex; gap:6px}
-  .hole{width:34px; height:34px; border-radius:50%; background:#e8e0d0; border:2px solid #c9b48a}
+  .hole{width:34px; height:34px; border-radius:50%; background:var(--panel2); border:2px solid #c9b48a}
   .hole.peg{background:#e8a33c; border-color:#b5762f}
-  .hole.picked{outline:3px solid var(--pink)}
+  .hole.picked{outline:2px solid var(--pink)}
   .hole.can{border-color:#3ddc97; border-width:3px}
   .gridp button small.cage{position:absolute; top:2px; left:4px; font-size:10px; font-weight:800; opacity:.75}
   .gridp button{position:relative}
   .sky{display:inline-grid; grid-template-columns:repeat(6,40px); gap:4px; margin:10px auto}
-  .sky .sc{font-size:14px; font-weight:800; color:#5a4f86; display:flex; align-items:center; justify-content:center}
-  .sky button{width:40px; height:40px; border-radius:8px; background:#fff; border:2px solid #cdc2f0;
-    font-size:19px; font-weight:800; color:#3a2f5e}
+  .sky .sc{font-size:14px; font-weight:800; color:var(--ink2); display:flex; align-items:center; justify-content:center}
+  .sky button{width:40px; height:40px; border-radius:8px; background:#fff; border:1px solid var(--line);
+    font-size:19px; font-weight:800; color:var(--ink)}
 
   /* mythic-tier puzzle bits */
   .gridp.g6{grid-template-columns:repeat(6,40px)}
   .gridp.g6 button,.gridp.g6 div{width:40px; height:40px; font-size:18px}
-  .gridp button.shaded{background:#3a2f5e; color:#fff; border-color:#3a2f5e}
+  .gridp button.shaded{background:var(--ink); color:#fff; border-color:var(--ink)}
   .futo{display:inline-grid; grid-template-columns:repeat(9,auto); gap:2px; margin:10px auto; align-items:center}
-  .fcell{width:40px; height:40px; border-radius:8px; background:#fff; border:2px solid #cdc2f0;
-    font-size:19px; font-weight:800; color:#3a2f5e; display:flex; align-items:center; justify-content:center}
-  .fcell.fixed{background:#cdc2f0}
-  .fcell.picked{outline:3px solid var(--pink)}
+  .fcell{width:40px; height:40px; border-radius:8px; background:#fff; border:1px solid var(--line);
+    font-size:19px; font-weight:800; color:var(--ink); display:flex; align-items:center; justify-content:center}
+  .fcell.fixed{background:var(--panel3)}
+  .fcell.picked{outline:2px solid var(--pink)}
   .fsign{width:16px; height:16px; font-size:13px; color:#8a5ac6; font-weight:800;
     display:flex; align-items:center; justify-content:center}
   .fsign.v{width:40px; height:14px}
@@ -226,21 +302,21 @@
   .tcell.tent{background:#ffe9a8; border-color:#e8c07a}
   .brsvg{width:230px; height:230px; display:block; margin:6px auto}
   .brtaps{display:grid; grid-template-columns:repeat(4,1fr); gap:5px; max-width:280px; margin:6px auto}
-  .brbtn{background:#efe9ff; border-radius:10px; padding:5px 0; font-weight:800; font-size:14px;
-    box-shadow:0 3px 0 #cdc2f0; display:flex; flex-direction:column; line-height:1.1}
+  .brbtn{background:var(--panel2); border-radius:10px; padding:5px 0; font-weight:800; font-size:14px;
+    box-shadow:var(--shadow-sm); display:flex; flex-direction:column; line-height:1.1}
   .brbtn small{font-size:11px; opacity:.7}
-  .brbtn.ok{background:#d7f7e9; box-shadow:0 3px 0 #3ddc97}
-  .brbtn.picked{outline:3px solid var(--pink)}
+  .brbtn.ok{background:#d7f7e9; box-shadow:var(--shadow-sm)}
+  .brbtn.picked{outline:2px solid var(--pink)}
   .chess{display:inline-grid; grid-template-columns:repeat(8,32px); gap:0; margin:10px auto;
     border:3px solid #8a7358; border-radius:4px; overflow:hidden}
   .chess .sq{width:32px; height:32px; background:#e8dcc0; font-size:21px; line-height:1;
     display:flex; align-items:center; justify-content:center; border-radius:0}
   .chess .sq.dark{background:#a8906a}
-  .chess .sq.picked{outline:3px solid var(--pink); outline-offset:-3px}
+  .chess .sq.picked{outline:2px solid var(--pink); outline-offset:-3px}
   .einstein{display:inline-grid; grid-template-columns:56px repeat(5,46px); gap:4px; margin:10px auto}
   .einstein .zl{font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:flex-end; padding-right:3px}
   .einstein .zh{font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center}
-  .einstein button{height:44px; border-radius:9px; background:#fff; border:2px solid #cdc2f0; font-size:21px}
+  .einstein button{height:44px; border-radius:9px; background:#fff; border:1px solid var(--line); font-size:21px}
   .coins.c12{grid-template-columns:repeat(6,1fr); max-width:300px}
 
   /* ascendant-tier puzzle bits */
@@ -257,20 +333,20 @@
   .kclue.corner{background:#2b3a2b}
   .kcell{width:52px; height:52px; border-radius:8px; background:#fff; border:2px solid #9fc89f;
     font-size:22px; font-weight:800; color:#2b3a2b}
-  .kcell.picked{outline:3px solid var(--pink)}
+  .kcell.picked{outline:2px solid var(--pink)}
   .bsgrid{display:inline-grid; grid-template-columns:repeat(6,42px); gap:4px; margin:10px auto}
   .bsgrid .sc{font-size:14px; font-weight:800; color:#2c6689; display:flex; align-items:center; justify-content:center}
   .bscell{width:42px; height:42px; border-radius:8px; background:#e8f4fa; border:2px solid #7fb8d8; font-size:19px}
   .bscell.ship{background:#2c6689}
   .cryptline{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:10px 0}
   .cword{display:flex; gap:3px}
-  .cslot{display:flex; flex-direction:column; align-items:center; background:#efe9ff; border-radius:6px;
+  .cslot{display:flex; flex-direction:column; align-items:center; background:var(--panel2); border-radius:6px;
     padding:3px 4px; min-width:24px}
-  .cslot b{font-size:18px; color:#3a2f5e}
+  .cslot b{font-size:18px; color:var(--ink)}
   .cslot small{font-size:10px; opacity:.6}
   .abcpad{display:grid; grid-template-columns:repeat(9,1fr); gap:3px; margin:8px auto; max-width:300px}
-  .abcpad button{background:#efe9ff; border-radius:6px; padding:5px 0; font-size:13px; font-weight:800;
-    box-shadow:0 2px 0 #cdc2f0}
+  .abcpad button{background:var(--panel2); border-radius:6px; padding:5px 0; font-size:13px; font-weight:800;
+    box-shadow:var(--shadow-sm)}
   .guess{font-family:ui-monospace,Menlo,monospace; font-size:20px; letter-spacing:3px}
 
   /* apex-tier puzzle bits */
@@ -278,35 +354,35 @@
   .nono.big{--nc:22px; --nl:36px; gap:2px}
   .nono.big .nc{font-size:9px; line-height:1.05}
   .nono.big .ncell{width:22px; height:22px; border-radius:4px; border-width:1px}
-  .gridp button.head{outline:3px solid #fff}
+  .gridp button.head{outline:2px solid var(--gold)}
   .ladder{display:flex; flex-direction:column; gap:6px; align-items:center; margin:10px 0}
-  .ladder .rung{background:#efe9ff; border-radius:10px; padding:8px 0; width:150px; font-weight:800;
-    font-size:19px; letter-spacing:3px; border:2px solid #cdc2f0}
-  .ladder .rung.fixed{background:#cdc2f0}
-  .ladder .rung.picked{outline:3px solid var(--pink)}
+  .ladder .rung{background:var(--panel2); border-radius:10px; padding:8px 0; width:150px; font-weight:800;
+    font-size:19px; letter-spacing:3px; border:1px solid var(--line)}
+  .ladder .rung.fixed{background:var(--panel3)}
+  .ladder .rung.picked{outline:2px solid var(--pink)}
   .btn.ghost.used{opacity:.45}
   .ein5{display:inline-grid; grid-template-columns:54px repeat(5,44px); gap:4px; margin:10px auto}
   .ein5 .zl{font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:flex-end; padding-right:3px}
   .ein5 .zh{font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center}
-  .ein5 button{height:42px; border-radius:8px; background:#fff; border:2px solid #cdc2f0; font-size:19px}
+  .ein5 button{height:42px; border-radius:8px; background:#fff; border:1px solid var(--line); font-size:19px}
 
   /* zenith-tier puzzle bits */
   .sli{display:inline-grid; grid-template-columns:14px 40px 14px 40px 14px 40px 14px;
     grid-template-rows:14px 40px 14px 40px 14px 40px 14px; margin:12px auto; align-items:center; justify-items:center}
-  .sdot{width:8px; height:8px; border-radius:50%; background:#3a2f5e}
-  .sedge{background:#e8e2f6; border-radius:3px; padding:0}
+  .sdot{width:8px; height:8px; border-radius:50%; background:var(--ink)}
+  .sedge{background:var(--panel3); border-radius:3px; padding:0}
   .sedge.h{width:36px; height:8px}
   .sedge.v{width:8px; height:36px}
-  .sedge.on{background:#3a2f5e}
-  .scell{font-size:16px; font-weight:800; color:#3a2f5e; display:flex; align-items:center; justify-content:center}
+  .sedge.on{background:var(--ink)}
+  .scell{font-size:16px; font-weight:800; color:var(--ink); display:flex; align-items:center; justify-content:center}
   .gridp div.island{background:#ffe9a8; border-color:#e8c07a; color:#5a4420; font-weight:800}
   .gridp button.sea{background:#2c6689; border-color:#2c6689}
-  .gridp div.blackcell{background:#2b2b2b; border-color:#2b2b2b}
+  .gridp div.blackcell{background:var(--ink); border-color:var(--ink)}
   .kakur{display:inline-grid; grid-template-columns:repeat(7,40px); gap:4px; margin:10px auto}
   .kakur .sc{font-size:14px; font-weight:800; color:#6b4d85; display:flex; align-items:center; justify-content:center}
   .kakur .sc.w{opacity:.5; font-size:12px}
-  .krcell{width:40px; height:40px; border-radius:8px; background:#fff; border:2px solid #cdc2f0}
-  .krcell.on{background:#8a5ac6; border-color:#8a5ac6}
+  .krcell{width:40px; height:40px; border-radius:8px; background:#fff; border:1px solid var(--line)}
+  .krcell.on{background:var(--ink); border-color:var(--ink)}
   .mag{display:inline-grid; grid-template-columns:repeat(6,46px); gap:4px; margin:10px auto}
   .mag .sc{font-size:11px; font-weight:800; color:#8a4d4d; line-height:1.2;
     display:flex; align-items:center; justify-content:center}
@@ -325,23 +401,23 @@
   .mcell i{width:18px; height:18px; border-radius:50%; display:block}
   .mcell i.pw{background:#fff; border:3px solid #1b1b24}
   .mcell i.pb{background:#1b1b24}
-  .medge{background:#eceaf6; border-radius:2px; padding:0}
+  .medge{background:var(--panel3); border-radius:2px; padding:0}
   .medge.h{width:10px; height:8px}
   .medge.v{width:8px; height:10px}
-  .medge.on{background:#5a3dd0}
+  .medge.on{background:var(--ink)}
   .sand{display:inline-grid; grid-template-columns:repeat(7,34px); gap:3px; margin:10px auto}
   .sand .sc{font-size:13px; font-weight:800; color:#6b5a30; display:flex; align-items:center; justify-content:center}
   .swcell{width:34px; height:34px; border-radius:5px; border:2px solid #d8c8a8; font-size:17px;
     font-weight:800; color:#3a3122; display:flex; align-items:center; justify-content:center}
   .swcell.fixed{background:#e8dcc0}
-  .swcell.picked{outline:3px solid var(--pink)}
+  .swcell.picked{outline:2px solid var(--pink)}
   .setgrid{display:grid; grid-template-columns:repeat(3,72px); gap:8px; justify-content:center; margin:10px auto}
-  .setcard{height:64px; background:#fff; border:3px solid #cdc2f0; border-radius:10px;
+  .setcard{height:64px; background:#fff; border:1px solid var(--line); border-radius:10px;
     font-size:19px; letter-spacing:2px; display:flex; align-items:center; justify-content:center}
   .setcard.picked{border-color:var(--pink); background:#fff0f7}
-  .pnbtn{background:#efe9ff; border-radius:12px; padding:6px 8px; font-weight:800; font-size:15px;
-    box-shadow:0 3px 0 #cdc2f0; display:flex; flex-direction:column; align-items:center; gap:3px}
-  .pnbtn.picked{outline:3px solid var(--pink)}
+  .pnbtn{background:var(--panel2); border-radius:var(--r); padding:6px 8px; font-weight:800; font-size:15px;
+    box-shadow:var(--shadow-sm); display:flex; flex-direction:column; align-items:center; gap:3px}
+  .pnbtn.picked{outline:2px solid var(--pink)}
   .pnbtn.used{opacity:.45}
   .mini-p{display:grid; gap:1px}
   .mini-p i{width:8px; height:8px; background:#ddd6f2; display:block; border-radius:1px}
@@ -349,7 +425,7 @@
     grid-template-rows:repeat(5,32px 8px) 32px; margin:10px auto; align-items:center; justify-items:center}
   .kpcell{width:32px; height:32px; border-radius:4px; border:1px solid #bcd8c4; font-size:16px;
     font-weight:800; color:#2b3a30}
-  .kpcell.picked{outline:3px solid var(--pink)}
+  .kpcell.picked{outline:2px solid var(--pink)}
   .kdot{display:flex; align-items:center; justify-content:center}
   .kdot i{width:8px; height:8px; border-radius:50%; display:block}
   .kdot i.kd-w{background:#fff; border:2px solid #2b3a30}
@@ -418,19 +494,23 @@
 <body>
 <div class="wrap">
   <header class="hud">
-    <div class="title"><span class="star">★</span> Star Key Escape</div>
-    <div class="roomname" id="roomname">Toy Room</div>
+    <div class="brand"><span class="star">★</span> Star Key Escape</div>
+    <div class="where">
+      <span class="roomno" id="roomno">Room 1</span>
+      <span class="roomname" id="roomname">Toy Room</span>
+      <span class="tier" id="tier">Little Explorer</span>
+    </div>
     <div class="prog" aria-label="star keys collected">
-      <span class="count" id="count">⭐ 0/10</span>
+      <span class="count" id="count">0 / 100</span>
       <span class="bar"><i id="fill"></i></span>
     </div>
   </header>
 
   <div class="stage" id="stage"></div>
 
-  <div class="say"><span class="face">🦊</span><span id="say">Tap things in the room to look at them!</span></div>
+  <div class="say"><span class="face" aria-hidden="true">🦊</span><span id="say">Tap things in the room to look at them.</span></div>
 
-  <div class="bag"><span class="label">BAG</span><span id="bag"></span></div>
+  <div class="bag"><span class="label">Bag</span><span id="bag"></span></div>
 </div>
 
 <div class="conf" id="conf" hidden></div>
@@ -472,8 +552,11 @@
       ? S.bag.map(e=>'<span class="item">'+e+'</span>').join("")
       : '<span style="opacity:.7;font-size:14px">empty</span>';
   }
+  const TIERS=["Little Explorer","Big Adventure","Master Escaper","Grandmaster","Legend",
+               "Mythic","Ascendant","Apex","Zenith","The Century"];
+  const tierOf=n=>TIERS[Math.min(Math.floor(n/10),TIERS.length-1)];
   function drawProgress(){
-    $("count").textContent = "⭐ "+S.keys+"/"+ROOMS.length;
+    $("count").textContent = S.keys+" / "+ROOMS.length;
     $("fill").style.width = (S.keys/ROOMS.length*100)+"%";
   }
   function close(){ scrim.hidden = true; card.innerHTML=""; }
@@ -7559,8 +7642,8 @@
     let h="";
     for(let r=0;r<5;r++) for(let c=0;c<5;c++){
       const id=S.hwReg[r][c], lab=(firstOf[id]===r*5+c)?S.hwCount[id]:"";
-      h+='<button data-hw="'+r+'-'+c+'" style="background:'+(S.hw[r][c]?"#3a2f5e":HWCOL[id%HWCOL.length])+
-         ';color:'+(S.hw[r][c]?"#fff":"#3a2f5e")+';border-color:'+HWCOL[id%HWCOL.length]+'">'+lab+'</button>';
+      h+='<button data-hw="'+r+'-'+c+'" style="background:'+(S.hw[r][c]?"#161a21":HWCOL[id%HWCOL.length])+
+         ';color:'+(S.hw[r][c]?"#f7f4ed":"#161a21")+';border-color:'+HWCOL[id%HWCOL.length]+'">'+lab+'</button>';
     }
     g.innerHTML=h;
   }
@@ -7822,7 +7905,12 @@
   function render(){
     const R=ROOMS[S.room];
     stage.innerHTML = R.draw();
+    stage.querySelectorAll("svg > text").forEach(t=>{        // the header names the room now
+      if(/^Room\s+\d+/.test(t.textContent.trim())) t.remove();
+    });
     $("roomname").textContent = R.name;
+    $("roomno").textContent = "Room "+(S.room+1);
+    $("tier").textContent = tierOf(S.room);
     drawProgress();
     stage.querySelectorAll(".hot").forEach(el=>{
       const go=el.dataset.go;
@@ -7847,12 +7935,13 @@
   }
 
   function finish(){
-    const rows=[];
-    for(let i=0;i<ROOMS.length;i+=5) rows.push("⭐".repeat(Math.min(5,ROOMS.length-i)));
-    open('<h2>🎉 YOU ESCAPED! 🎉</h2><div style="font-size:38px">'+rows.join("<br>")+'</div>'+
-      '<p>All '+ROOMS.length+' rooms, all '+ROOMS.length+' star keys. You are a real escape hero!</p>'+
+    open('<h2>You escaped</h2>'+
+      '<div class="tally"><b>'+ROOMS.length+'</b><span>rooms</span>'+
+      '<b>'+ROOMS.length+'</b><span>star keys</span></div>'+
+      '<div class="tierlist">'+TIERS.map(t=>'<span>'+t+'</span>').join("")+'</div>'+
+      '<p>Every room, every tier, from the toy box to the hundredth door.</p>'+
       '<div class="row"><button class="btn" data-again>Play again</button></div>');
-    say("You escaped every room! Amazing work. 🦊");
+    say("You escaped every room. All the way through. 🦊");
   }
 
   function goRoom(n){
@@ -7877,11 +7966,17 @@
 
   function startScreen(){
     const canResume = S.furthest>0;
-    open('<h2>⭐ Star Key Escape</h2>'+
-      '<p>'+ROOMS.length+' rooms, '+ROOMS.length+' star keys.<br>1–10 gentle · 11–20 bigger kids · '+
-      '21–30 brain-benders · 31–40 grandmaster · 41–50 legend · 51–60 mythic · 61–70 ascendant · '+
-      '71–80 apex · 81–90 zenith · 91–100 the century.</p>'+
-      '<div class="map">'+ROOMS.map((r,i)=>'<b'+(i<=S.furthest?' class="done"':'')+'>'+(i+1)+'</b>').join("")+'</div>'+
+    let map='<div class="maptiers">';
+    for(let t=0; t*10<ROOMS.length; t++){
+      map+='<div class="maprow"><span class="tname">'+TIERS[t]+'</span><span class="tcells">';
+      for(let i=t*10; i<Math.min((t+1)*10,ROOMS.length); i++)
+        map+='<b'+(i<S.furthest?' class="done"':i===S.furthest?' class="done now"':'')+'>'+(i+1)+'</b>';
+      map+='</span></div>';
+    }
+    map+='</div>';
+    open('<h2>Star Key Escape</h2>'+
+      '<p>'+ROOMS.length+' rooms, '+ROOMS.length+' star keys. It begins gently and does not stay that way.</p>'+
+      map+
       '<div class="row">'+
         (canResume?'<button class="btn" data-resume>Continue — Room '+(S.furthest+1)+'</button>':'')+
         '<button class="'+(canResume?'btn ghost':'btn')+'" data-start>Start from Room 1</button>'+

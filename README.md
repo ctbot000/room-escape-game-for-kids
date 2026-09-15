@@ -175,6 +175,10 @@ is one extra thing to poke at in each room, just for fun.
 
 ## How it is built
 
+- Ink-and-paper interface: a dark gallery ground, warm paper panels, one amber accent,
+  serif headings, hairline rules. The room art stays bright; the chrome gets out of its way.
+- The header names the room, the tier and your progress; the start screen lays all
+  100 rooms out by tier so you can see the shape of the climb.
 - Big tap targets, emoji and SVG art, no text a 6-year-old can't skip.
 - Nothing is ever lost — wrong answers wiggle, and every puzzle can be reset.
 - Progress is saved, so you can close the tab and **Continue** later.
