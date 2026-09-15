@@ -1,7 +1,7 @@
 # ⭐ Star Key Escape
 
 A **room escape game** that starts out for small kids and ends up somewhere their
-parents will need a pencil. Ninety rooms, ninety star keys, and no way to lose — a
+parents will need a pencil. One hundred rooms, one hundred star keys, and no way to lose — a
 wrong answer just wiggles and lets you try again.
 
 **▶ Play: https://ctbot000.github.io/room-escape-game-for-kids/**
@@ -17,6 +17,7 @@ wrong answer just wiggles and lets you try again.
 | Ascendant | 61–70 | the back page, on a Saturday |
 | Apex | 71–80 | the puzzle magazine's last pages |
 | Zenith | 81–90 | the ones with their own societies |
+| The Century | 91–100 | everything that was left |
 
 ## Part 1 — Little Explorer
 
@@ -152,6 +153,21 @@ wrong answer just wiggles and lets you try again.
 | 88 | Jigsaw Sudoku | 6×6 with regions that are not rectangles | constraint logic |
 | 89 | Norinori | Exactly two shaded per region, all falling into dominoes | pairing |
 | 90 | The Fifteen | The oldest sliding puzzle of all, as the last door | patience |
+
+## Part 10 — The Century
+
+| # | Room | Puzzle | Skill |
+|---|------|--------|-------|
+| 91 | Masyu | One loop threading every black and white pearl | loop logic |
+| 92 | Fillomino | Every patch must be exactly as big as its number | region logic |
+| 93 | Kuromasu | Each number counts every white square it can see | sight lines |
+| 94 | Heyawake | Rooms, counts, and no long view across three rooms | shading |
+| 95 | Sandwich Sudoku | The clue is the total between the 1 and the 6 | sudoku variant |
+| 96 | The 24 Game | Four numbers, four operations, make 24 | arithmetic |
+| 97 | Set | Nine cards, exactly one trio that agrees | perception |
+| 98 | Pentominoes | Five awkward shapes into twenty-five squares | packing |
+| 99 | Kropki Sudoku | No given digits at all — only the dots between | deduction |
+| 100 | The Hundredth Door | Five locks: a count, a word, a sum, a deduction, a pattern | all of it |
 
 Every room has the same shape, so a child learns it once: a **clue** to look at,
 a **puzzle** to solve, and a **door** that opens when the puzzle is done. There
