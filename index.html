@@ -145,12 +145,20 @@
   .maprow{display:grid; grid-template-columns:86px 1fr; gap:9px; align-items:center}
   .maprow .tname{font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
     color:var(--ink3); text-align:right; line-height:1.2}
-  .maprow .tcells{display:grid; grid-template-columns:repeat(10,1fr); gap:3px}
-  .maprow b{background:var(--panel2); border:1px solid var(--line2); border-radius:4px;
-    height:20px; display:flex; align-items:center; justify-content:center;
-    font-size:9px; font-weight:700; color:var(--ink3); font-variant-numeric:tabular-nums}
-  .maprow b.done{background:var(--gold); border-color:var(--gold2); color:#3a2a08}
-  .maprow b.now{outline:2px solid var(--ink); outline-offset:1px}
+  .maprow .tcells{display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:3px}
+  .maprow b,.maprow button{background:var(--panel2); border:1px solid var(--line2); border-radius:4px;
+    height:22px; min-width:0; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    padding:0; font-size:10px; font-weight:700; color:var(--ink3); font-variant-numeric:tabular-nums}
+  .maprow b{opacity:.5}
+  .maprow button{cursor:pointer; background:var(--gold); border-color:var(--gold2); color:#3a2a08;
+    transition:transform .12s ease, box-shadow .15s ease}
+  .maprow button:hover{transform:translateY(-1px); box-shadow:0 2px 5px rgba(0,0,0,.18)}
+  .maprow button.now{outline:2px solid var(--ink); outline-offset:1px}
+  .maprow button.here{background:var(--ink); border-color:var(--ink); color:var(--panel)}
+  .jump{font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink2); border:1px solid var(--line); border-radius:999px; padding:5px 11px;
+    background:var(--panel); box-shadow:var(--shadow-sm); transition:background .15s ease, color .15s ease}
+  .jump:hover{background:#fff; color:var(--ink)}
 
   .tally{display:grid; grid-template-columns:auto auto; gap:2px 12px; justify-content:center;
     align-items:baseline; margin:14px 0 10px}
@@ -488,6 +496,9 @@
     .krop{grid-template-columns:repeat(5,28px 7px) 28px; grid-template-rows:repeat(5,28px 7px) 28px}
     .kpcell{width:28px; height:28px; font-size:14px}
     .coins{max-width:240px}
+    .maprow{grid-template-columns:1fr; gap:3px}
+    .maprow .tname{text-align:left; font-size:9px}
+    .maprow b,.maprow button{height:28px; font-size:11px}
   }
 </style>
 </head>
@@ -504,6 +515,7 @@
       <span class="count" id="count">0 / 100</span>
       <span class="bar"><i id="fill"></i></span>
     </div>
+    <button class="jump" id="jump" aria-label="go to another room">Rooms</button>
   </header>
 
   <div class="stage" id="stage"></div>
@@ -537,7 +549,7 @@
   function loadSave(){
     try{
       const v = localStorage.getItem(SAVE);
-      if(v!==null){ const n=parseInt(v,10); if(!isNaN(n)) S.furthest=Math.min(Math.max(n,0),ROOMS.length-1); }
+      if(v!==null){ const n=parseInt(v,10); if(!isNaN(n)) S.furthest=Math.min(Math.max(n,0),ROOMS.length); }
     }catch(e){/* storage unavailable: play without resume */}
   }
   function save(){
@@ -625,9 +637,11 @@
   }
 
   /* ---------- shared SVG pieces ---------- */
+  // a room you have already finished stays finished when you come back to it
+  function roomDone(){ return !!S.solved[S.room] || S.room < S.furthest; }
   function door(o){
     const g=o.frame||"#8a5a2b", p=o.panel||"#a06b35", x=o.x||610, y=o.y||170,
-          w=o.w||150, h=o.h||270, isOpen=S.solved[S.room];
+          w=o.w||150, h=o.h||270, isOpen=roomDone();
     return `<g class="hot" data-go="door" tabindex="0" role="button" aria-label="door">
       <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${g}"/>
       <rect x="${x+16}" y="${y+16}" width="${w-32}" height="${h-32}" rx="9" fill="${isOpen?'#1b1030':p}"/>
@@ -7922,16 +7936,20 @@
 
   function doorTap(){
     const R=ROOMS[S.room];
-    if(!S.solved[S.room]){
+    if(!roomDone()){
       open('<h2>Locked!</h2><p>'+R.locked+'</p><div class="row"><button class="btn" data-close>OK</button></div>');
       return;
     }
-    S.keys++; drawProgress(); confetti();
-    if(S.room===ROOMS.length-1){ finish(); return; }
-    S.furthest=Math.max(S.furthest,S.room+1); save();
-    open('<h2>⭐ Star key '+S.keys+' of '+ROOMS.length+'!</h2>'+
-      '<p>The door swings open…</p>'+
-      '<div class="row"><button class="btn" data-next>Next room →</button></div>');
+    const first = S.room>=S.furthest;                 // not a room being revisited
+    if(first){ S.furthest=S.room+1; save(); }
+    S.keys=S.furthest; drawProgress();
+    if(S.room===ROOMS.length-1){ confetti(); finish(); return; }
+    if(first) confetti();
+    open((first
+        ? '<h2>Star key '+S.keys+' of '+ROOMS.length+'</h2><p>The door swings open…</p>'
+        : '<h2>Through you go</h2><p>This door was already open to you.</p>')+
+      '<div class="row"><button class="btn" data-next>Next room →</button>'+
+      '<button class="btn ghost" data-rooms>Rooms</button></div>');
   }
 
   function finish(){
@@ -7961,24 +7979,43 @@
   }
 
   function reset(){
-    S.keys=0; S.bag=[]; S.solved={}; drawBag(); goRoom(0);
+    S.keys=S.furthest; S.bag=[]; S.solved={}; drawBag(); drawProgress(); goRoom(0);
   }
 
-  function startScreen(){
-    const canResume = S.furthest>0;
+  // every room up to the furthest one reached is open to visit again
+  function roomMap(live){
     let map='<div class="maptiers">';
     for(let t=0; t*10<ROOMS.length; t++){
       map+='<div class="maprow"><span class="tname">'+TIERS[t]+'</span><span class="tcells">';
-      for(let i=t*10; i<Math.min((t+1)*10,ROOMS.length); i++)
-        map+='<b'+(i<S.furthest?' class="done"':i===S.furthest?' class="done now"':'')+'>'+(i+1)+'</b>';
+      for(let i=t*10; i<Math.min((t+1)*10,ROOMS.length); i++){
+        const unlocked = i<=S.furthest;
+        const cls=[i===S.furthest?"now":"", live&&i===S.room?"here":""].filter(Boolean).join(" ");
+        map += unlocked
+          ? '<button data-goto="'+i+'"'+(cls?' class="'+cls+'"':'')+
+            ' aria-label="Room '+(i+1)+' — '+ROOMS[i].name+'">'+(i+1)+'</button>'
+          : '<b>'+(i+1)+'</b>';
+      }
       map+='</span></div>';
     }
-    map+='</div>';
+    return map+'</div>';
+  }
+
+  function roomPicker(){
+    open('<h2>Rooms</h2>'+
+      '<p>Every room you have reached stays open. Tap one to go back to it.</p>'+
+      roomMap(true)+
+      '<div class="row"><button class="btn ghost" data-close>Stay here</button></div>');
+  }
+
+  const resumeRoom = ()=>Math.min(S.furthest,ROOMS.length-1);
+
+  function startScreen(){
+    const canResume = S.furthest>0;
     open('<h2>Star Key Escape</h2>'+
       '<p>'+ROOMS.length+' rooms, '+ROOMS.length+' star keys. It begins gently and does not stay that way.</p>'+
-      map+
+      roomMap(false)+
       '<div class="row">'+
-        (canResume?'<button class="btn" data-resume>Continue — Room '+(S.furthest+1)+'</button>':'')+
+        (canResume?'<button class="btn" data-resume>Continue — Room '+(resumeRoom()+1)+'</button>':'')+
         '<button class="'+(canResume?'btn ghost':'btn')+'" data-start>Start from Room 1</button>'+
       '</div>');
   }
@@ -7990,7 +8027,9 @@
     if(b.hasAttribute("data-next"))   return goRoom(S.room+1);
     if(b.hasAttribute("data-again"))  return reset();
     if(b.hasAttribute("data-start"))  return reset();
-    if(b.hasAttribute("data-resume")){ S.keys=S.furthest; S.bag=[]; S.solved={}; drawBag(); return goRoom(S.furthest); }
+    if(b.hasAttribute("data-resume")){ S.keys=S.furthest; S.bag=[]; S.solved={}; drawBag(); drawProgress(); return goRoom(resumeRoom()); }
+    if(b.hasAttribute("data-rooms"))  return roomPicker();
+    if(b.dataset.goto !== undefined)  return goRoom(+b.dataset.goto);
     if(b.hasAttribute("data-replay")) return playSeq();
     if(b.dataset.cmd !== undefined)  return cmdTap(b);        // Run / Clear need to work mid-run
     if(S.busy) return;                       // ignore taps while a sequence is playing
@@ -8168,8 +8207,13 @@
     if(e.key==="Escape" && !scrim.hidden && !card.querySelector("[data-start]")) close();
   });
 
+  $("jump").addEventListener("click", ()=>{
+    if(card.querySelector("[data-start]")) return;   // the start screen is already a room map
+    roomPicker();
+  });
+
   /* ---------- boot ---------- */
-  loadSave(); drawBag(); render(); startScreen();
+  loadSave(); S.keys=S.furthest; drawBag(); drawProgress(); render(); startScreen();
 })();
 </script>
 </body>

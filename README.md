@@ -179,9 +179,12 @@ is one extra thing to poke at in each room, just for fun.
   serif headings, hairline rules. The room art stays bright; the chrome gets out of its way.
 - The header names the room, the tier and your progress; the start screen lays all
   100 rooms out by tier so you can see the shape of the climb.
+- **Rooms** in the header opens that same map at any time: every room you have
+  reached stays open, so you can go back to an earlier one and play it again.
 - Big tap targets, emoji and SVG art, no text a 6-year-old can't skip.
 - Nothing is ever lost — wrong answers wiggle, and every puzzle can be reset.
-- Progress is saved, so you can close the tab and **Continue** later.
+- Progress is saved, so you can close the tab and **Continue** later. Replaying a
+  room you have finished never changes the count.
 - Works with mouse, touch, and keyboard (Tab + Enter); Esc closes a popup.
 - One file, no build step, no dependencies, works offline.
 - Every constructed puzzle is checked for solvability, not just eyeballed.
