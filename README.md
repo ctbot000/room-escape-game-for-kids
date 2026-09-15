@@ -1,7 +1,7 @@
 # ⭐ Star Key Escape
 
 A **room escape game** that starts out for small kids and ends up somewhere their
-parents will need a pencil. Eighty rooms, eighty star keys, and no way to lose — a
+parents will need a pencil. Ninety rooms, ninety star keys, and no way to lose — a
 wrong answer just wiggles and lets you try again.
 
 **▶ Play: https://ctbot000.github.io/room-escape-game-for-kids/**
@@ -16,6 +16,7 @@ wrong answer just wiggles and lets you try again.
 | Mythic | 51–60 | newspaper-puzzle-page hard |
 | Ascendant | 61–70 | the back page, on a Saturday |
 | Apex | 71–80 | the puzzle magazine's last pages |
+| Zenith | 81–90 | the ones with their own societies |
 
 ## Part 1 — Little Explorer
 
@@ -136,6 +137,21 @@ wrong answer just wiggles and lets you try again.
 | 78 | Shikaku | Cut the floor into rectangles, one number each | division |
 | 79 | Suguru | Regions count up from 1; equal numbers may not touch | placement |
 | 80 | Five Houses, Complete | The full fifteen-clue riddle. Who owns the fish? | the classic |
+
+## Part 9 — Zenith
+
+| # | Room | Puzzle | Skill |
+|---|------|--------|-------|
+| 81 | Slitherlink | One closed loop; each number counts its own sides | loop logic |
+| 82 | Hidato | Lay 1 to 25 in an unbroken chain, diagonals allowed | chain building |
+| 83 | Kakurasu | Squares are worth their position; match every total | weighted sums |
+| 84 | Nurikabe | Islands of the right size, one connected sea, no 2×2 pool | region logic |
+| 85 | Str8ts | Every white run a set of consecutive numbers | straights |
+| 86 | Magnets | Eight dominoes; like poles may never touch | parity + counts |
+| 87 | Send More Money | The most famous cryptarithm there is | algebraic search |
+| 88 | Jigsaw Sudoku | 6×6 with regions that are not rectangles | constraint logic |
+| 89 | Norinori | Exactly two shaded per region, all falling into dominoes | pairing |
+| 90 | The Fifteen | The oldest sliding puzzle of all, as the last door | patience |
 
 Every room has the same shape, so a child learns it once: a **clue** to look at,
 a **puzzle** to solve, and a **door** that opens when the puzzle is done. There
