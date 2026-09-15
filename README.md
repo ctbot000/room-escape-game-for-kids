@@ -1,7 +1,7 @@
 # ⭐ Star Key Escape
 
 A **room escape game** that starts out for small kids and ends up somewhere their
-parents will need a pencil. Sixty rooms, sixty star keys, and no way to lose — a
+parents will need a pencil. Seventy rooms, seventy star keys, and no way to lose — a
 wrong answer just wiggles and lets you try again.
 
 **▶ Play: https://ctbot000.github.io/room-escape-game-for-kids/**
@@ -14,6 +14,7 @@ wrong answer just wiggles and lets you try again.
 | Grandmaster | 31–40 | teens and grown-ups |
 | Legend | 41–50 | the classics, at full size |
 | Mythic | 51–60 | newspaper-puzzle-page hard |
+| Ascendant | 61–70 | the back page, on a Saturday |
 
 ## Part 1 — Little Explorer
 
@@ -104,6 +105,21 @@ wrong answer just wiggles and lets you try again.
 | 58 | Mate in One | A real position; find the mating move | chess |
 | 59 | Warehouse | Sokoban with two crates | planning |
 | 60 | Five Houses | The full riddle: ten clues, colours, pets, drinks | logic grid |
+
+## Part 7 — Ascendant
+
+| # | Room | Puzzle | Skill |
+|---|------|--------|-------|
+| 61 | Mosaic | Numbers count shaded tiles in their own 3×3 | fill-a-pix |
+| 62 | Kakuro | Runs of digits adding to their clue, no repeats | sum logic |
+| 63 | Light-up | Light every square, no bulb shining on another | Akari |
+| 64 | Star Battle | One star per row, column and region, none touching | placement |
+| 65 | Dominosa | Six dominoes, their dividing lines rubbed out | matching |
+| 66 | The Crossing | Three farmers, three wolves, a two-seat boat | state search |
+| 67 | Safe Cracker | Four different digits, 🟢 / 🟡 feedback | deduction |
+| 68 | Battleships | Find a fleet of four from the row and column counts | elimination |
+| 69 | Cryptogram | A shuffled alphabet and three letters to start from | pattern reading |
+| 70 | Sudoku Nine | The full 9×9, 32 givens, one solution | the classic |
 
 Every room has the same shape, so a child learns it once: a **clue** to look at,
 a **puzzle** to solve, and a **door** that opens when the puzzle is done. There
