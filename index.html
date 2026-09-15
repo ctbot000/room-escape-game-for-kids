@@ -141,8 +141,44 @@
   .banks .you.dim{opacity:.25}
   .banks .water{font-size:20px; opacity:.6}
 
+  /* grandmaster puzzle bits */
+  .mmrow{display:flex; gap:5px; align-items:center; justify-content:center; margin:4px 0}
+  .mmrow i{width:26px; height:26px; border-radius:50%; display:block}
+  .pegs2{font-size:14px; letter-spacing:1px; margin-left:6px}
+  .slot2{width:34px; height:34px; border-radius:50%; background:#efe9ff; border:3px solid #cdc2f0; display:inline-block}
+  .gridp div.target{background:#fff2cc; border-color:#e8c07a}
+  .gridp button.head{outline:3px solid var(--pink)}
+  .gridp button.start{background:#d7f7e9}
+  .gridp button.endcell{background:#ffe0e0}
+  .gridp button.on{background:#cdefff; border-color:#5ec8ff}
+  .nono{--nc:42px; display:inline-grid; grid-template-columns:44px repeat(5,var(--nc)); gap:4px; margin:8px auto}
+  .nono .nc{font-size:13px; font-weight:800; color:#5a4f86; display:flex; align-items:center; justify-content:center}
+  .nono .nc.side{justify-content:flex-end; padding-right:4px}
+  .nono .nc.top{align-items:flex-end; min-height:34px}
+  .nono .ncell{width:var(--nc); height:var(--nc); border-radius:8px; background:#fff; border:2px solid #cdc2f0}
+  .nono .ncell.on{background:#3a2f5e; border-color:#3a2f5e}
+  .bigtime{font-size:26px; font-weight:800; background:#2b2340; color:var(--gold);
+    border-radius:14px; padding:8px; margin:10px auto; max-width:200px}
+  .jugs{display:flex; gap:22px; justify-content:center; align-items:flex-end; margin:10px 0}
+  .jug{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:14px}
+  .qlist{display:flex; flex-direction:column; gap:8px; margin:10px 0}
+  .qbtn{background:#efe9ff; border-radius:14px; padding:10px 12px; font-size:15px; text-align:left;
+    box-shadow:0 3px 0 #cdc2f0; line-height:1.35}
+  .coins{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-width:280px; margin:10px auto}
+  .coin{background:#efe9ff; border-radius:12px; padding:6px 0; font-size:24px; box-shadow:0 3px 0 #cdc2f0;
+    display:flex; flex-direction:column; align-items:center; line-height:1}
+  .coin small{font-size:12px; font-weight:800}
+  .coin.p1{background:#cdefff; box-shadow:0 3px 0 #7cc4e8}
+  .coin.p2{background:#ffe6c7; box-shadow:0 3px 0 #e8b878}
+
   @media (max-width:520px){
     .title{font-size:17px} .say{font-size:15px} .stage{max-height:48vh} .big{font-size:32px; min-width:60px}
+    .nono{--nc:32px; grid-template-columns:34px repeat(5,var(--nc)); gap:3px}
+    .nono .nc{font-size:11px}
+    .gridp.g4{grid-template-columns:repeat(4,50px)}
+    .gridp.g3{grid-template-columns:repeat(3,50px)}
+    .gridp button,.gridp div{width:50px; height:50px; font-size:21px}
+    .coins{max-width:240px}
   }
 </style>
 </head>
@@ -1581,6 +1617,455 @@
           <button class="btn alt" data-close>Later</button></div>`);
       drawSlide();
     }
+  },
+
+  /* ---------- 31 · Code Breaker : mastermind ---------- */
+  {
+    name:"Code Breaker",
+    banner:"Part 4 — Grandmaster. Bring a pencil. ✏️",
+    intro:"A lock with coloured slots, and no clue what goes in them. 🎨",
+    locked:"Crack the colour code and the lock lets go.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#1a1f2e"/><rect y="470" width="800" height="130" fill="#262d40"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:160,edge:"#7f8fa8",inner:
+        '<text x="180" y="186" font-size="18" text-anchor="middle">⚫ right colour,</text>'+
+        '<text x="180" y="212" font-size="18" text-anchor="middle">right place</text>'+
+        '<text x="180" y="248" font-size="18" text-anchor="middle">⚪ right colour,</text>'+
+        '<text x="180" y="274" font-size="18" text-anchor="middle">wrong place</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="colour lock">
+        <rect x="360" y="200" width="270" height="200" rx="16" fill="#333c54" stroke="#7f8fa8" stroke-width="6"/>
+        ${["#ff6b6b","#ffd93d","#3ddc97","#5ec8ff"].map((c,i)=>
+          `<circle cx="${400+i*60}" cy="270" r="22" fill="${c}"/>`).join("")}
+        ${[0,1,2].map(i=>`<circle cx="${430+i*60}" cy="345" r="20" fill="#1a1f2e" stroke="#7f8fa8" stroke-width="4"/>`).join("")}
+        <text x="495" y="392" font-size="18" text-anchor="middle" fill="#cfe0ff">colour lock</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="notepad"><text x="150" y="420" font-size="40">📝</text></g>
+      ${door({frame:"#3a4257",panel:"#59657f",x:660,y:180,w:120,h:290})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe0ff">Room 31 · Code Breaker</text>`);
+    },
+    clue:()=>open(`<h2>How the lock answers</h2>
+      <p>Guess three colours in a row. The lock replies:</p>
+      <p style="font-size:19px">⚫ = a colour that is <b>right, in the right place</b><br>
+         ⚪ = a colour that is <b>in the code but in the wrong place</b></p>
+      <p class="mini">No colour is used twice. Four colours, three slots — 24 possible codes.</p>
+      <div class="row"><button class="btn" data-close>Let me think</button></div>`),
+    extra:()=>{ say("A notepad, covered in crossed-out guesses. 📝"); close(); },
+    puzzle(){
+      S.secret=["Y","B","R"]; S.guess=[]; S.tries=[];
+      S.onDone=()=>solve("🔓","Cracked it! 🎉","Yellow, blue, red. The lock sprang open.");
+      open(`<h2>Crack the three-colour code</h2>
+        <div id="mmhist"></div>
+        <div class="row" id="mmslots"></div>
+        <div class="row">
+          ${[["R","#ff6b6b"],["Y","#ffd93d"],["G","#3ddc97"],["B","#5ec8ff"]].map(([k,c])=>
+            '<button class="big" data-mm="'+k+'" style="background:'+c+'">&nbsp;</button>').join("")}
+        </div>
+        <p class="msg">Pick three colours, then Check.</p>
+        <div class="row"><button class="btn" data-mmgo>Check</button>
+          <button class="btn ghost" data-mmclear>Clear</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawMM();
+    }
+  },
+
+  /* ---------- 32 · Minefield : deduce where the mines are ---------- */
+  {
+    name:"Minefield",
+    intro:"Every tile is numbered, and three of them are definitely not safe. 💣",
+    locked:"Flag all three mines and the floor will let you pass.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2c2a25"/><rect y="460" width="800" height="140" fill="#3d3a33"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#a89a7a",inner:
+        '<text x="180" y="196" font-size="18" text-anchor="middle">A number says how</text>'+
+        '<text x="180" y="222" font-size="18" text-anchor="middle">many mines touch</text>'+
+        '<text x="180" y="248" font-size="18" text-anchor="middle">that tile — including</text>'+
+        '<text x="180" y="274" font-size="18" text-anchor="middle">corners</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="minefield floor">
+        <rect x="380" y="180" width="240" height="240" rx="10" fill="#1f1d19" stroke="#a89a7a" stroke-width="6"/>
+        ${[0,1,2,3].map(r=>[0,1,2,3].map(c=>`<rect x="${394+c*56}" y="${194+r*56}" width="48" height="48" rx="6"
+          fill="#4a463d"/>`).join("")).join("")}
+        <text x="500" y="450" font-size="20" text-anchor="middle" fill="#e6dcc0">the floor</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="warning lamp"><text x="150" y="420" font-size="40">🚨</text></g>
+      ${door({frame:"#54503f",panel:"#726c56",x:660,y:180,w:120,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e6dcc0">Room 32 · Minefield</text>`);
+    },
+    clue:()=>open(`<h2>The safety notice</h2>
+      <p>"A number tells you how many mines touch that tile — sideways, up, down
+         <b>and diagonally</b>. There are exactly <b>three</b> mines."</p>
+      <p class="mini">Grey tiles are unknown. Tap one to plant a 🚩. You never have to guess — every mine can be worked out.</p>
+      <div class="row"><button class="btn" data-close>Careful now</button></div>`),
+    extra:()=>{ say("The warning lamp turns slowly. No sound, thankfully. 🚨"); close(); },
+    puzzle(){
+      S.mines=[[1,1],[0,3],[3,0]];
+      S.shown=[[0,1,1,0],[1,0,1,1],[1,1,1,0],[0,1,1,0]];   // 1 = number visible
+      S.flags=[];
+      S.onDone=()=>solve("💣","All three found — and not one step wrong! 🎉","The floor lit up green and a defused mine rolled over as a souvenir.");
+      open(`<h2>Flag all three mines</h2>
+        <div class="gridp g4" id="minegrid"></div>
+        <p class="msg">Three mines hidden. Tap a grey tile to flag it.</p>
+        <div class="row"><button class="btn ghost" data-mineclear>Clear flags</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawMines();
+    }
+  },
+
+  /* ---------- 33 · Pixel Gate : nonogram ---------- */
+  {
+    name:"Pixel Gate",
+    intro:"A gate made of tiny squares, most of them blank. 🧩",
+    locked:"Fill in the right squares and the picture unlocks the gate.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#122036"/><rect y="470" width="800" height="130" fill="#1c2e4a"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:170,edge:"#6f8fc8",inner:
+        '<text x="180" y="184" font-size="18" text-anchor="middle">The numbers count</text>'+
+        '<text x="180" y="210" font-size="18" text-anchor="middle">filled squares in a</text>'+
+        '<text x="180" y="236" font-size="18" text-anchor="middle">row, in order, with</text>'+
+        '<text x="180" y="262" font-size="18" text-anchor="middle">a gap between each</text>'+
+        '<text x="180" y="292" font-size="18" text-anchor="middle">block</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="pixel wall">
+        <rect x="370" y="170" width="260" height="260" rx="10" fill="#0c1729" stroke="#6f8fc8" stroke-width="6"/>
+        ${[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>`<rect x="${384+c*48}" y="${184+r*48}" width="40" height="40" rx="5"
+          fill="#1b2c47"/>`).join("")).join("")}
+        <text x="500" y="458" font-size="20" text-anchor="middle" fill="#cfe0ff">pixel wall</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a tiny painting"><text x="150" y="420" font-size="40">🖼️</text></g>
+      ${door({frame:"#24395c",panel:"#3a5a8c",x:660,y:180,w:120,h:290})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe0ff">Room 33 · Pixel Gate</text>`);
+    },
+    clue:()=>open(`<h2>How to read the numbers</h2>
+      <p>A clue like <b>1 3</b> means: one filled square, then at least one gap,
+         then three filled squares — in that order.</p>
+      <p><b>0</b> means the whole line stays empty.</p>
+      <p class="mini">Start with the lines that are nearly full — they leave the fewest choices.</p>
+      <div class="row"><button class="btn" data-close>Understood</button></div>`),
+    extra:()=>{ say("A tiny painting of… a key? Hard to tell at this size. 🖼️"); close(); },
+    puzzle(){
+      S.nsol=[[0,1,1,1,0],[0,1,0,1,0],[0,1,1,1,0],[0,0,1,0,0],[0,0,1,1,0]];
+      S.ngrid=[0,1,2,3,4].map(()=>[0,0,0,0,0]);
+      S.onDone=()=>solve("🧩","It's a key! 🎉","The picture lit up and the gate swung wide.");
+      open(`<h2>Fill in the picture</h2>
+        <div id="nonobox"></div>
+        <p class="msg">Tap a square to fill it or clear it.</p>
+        <div class="row"><button class="btn ghost" data-nonoclear>Clear all</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawNono();
+    }
+  },
+
+  /* ---------- 34 · Bridge at Night : cross in 17 minutes ---------- */
+  {
+    name:"Bridge at Night",
+    intro:"A rickety bridge, one torch, and not much time. 🔦",
+    locked:"Everyone has to be across — and in time.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#101a2e"/>${stars(40,17)}
+      <rect y="430" width="800" height="170" fill="#1a2740"/>
+      <rect x="240" y="400" width="330" height="14" fill="#6b4f3a"/>
+      ${[0,1,2,3,4,5].map(i=>`<line x1="${250+i*62}" y1="400" x2="${250+i*62}" y2="430" stroke="#6b4f3a" stroke-width="6"/>`).join("")}
+      ${sign({go:"clue",x:50,y:120,w:250,h:160,edge:"#8fa3c8",inner:
+        '<text x="175" y="164" font-size="18" text-anchor="middle">Two may cross at once</text>'+
+        '<text x="175" y="192" font-size="18" text-anchor="middle">and they walk at the</text>'+
+        '<text x="175" y="220" font-size="18" text-anchor="middle">slower one sets the pace.</text>'+
+        '<text x="175" y="252" font-size="18" text-anchor="middle">Someone must carry</text>'+
+        '<text x="175" y="276" font-size="18" text-anchor="middle">the torch back.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the four travellers">
+        <rect x="380" y="180" width="270" height="150" rx="14" fill="#23314d" stroke="#8fa3c8" stroke-width="5"/>
+        <text x="515" y="240" font-size="34" text-anchor="middle">🧒 👦 👩 👴</text>
+        <text x="515" y="286" font-size="22" text-anchor="middle" fill="#cfe0ff">1 · 2 · 5 · 10 min</text>
+        <text x="515" y="316" font-size="18" text-anchor="middle" fill="#ffd93d">🔦 17 minutes of torch</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="the ravine"><text x="640" y="520" font-size="36">🌫️</text></g>
+      ${door({frame:"#2c3a5e",panel:"#44598c",x:640,y:120,w:140,h:270})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe0ff">Room 34 · Bridge at Night</text>`);
+    },
+    clue:()=>open(`<h2>The bridge keeper's rules</h2>
+      <p>Four travellers cross at <b>1, 2, 5 and 10</b> minutes.</p>
+      <p>At most <b>two</b> cross together, and a pair moves at the <b>slower</b> one's pace.
+         The torch must be carried back for the next pair.</p>
+      <p class="mini">It can be done in exactly <b>17</b> minutes. The trick: the two slowest should travel together.</p>
+      <div class="row"><button class="btn" data-close>17 minutes…</button></div>`),
+    extra:()=>{ say("Fog drifts up from the ravine. Best not to look down. 🌫️"); close(); },
+    puzzle(){
+      S.bl=[1,2,5,10]; S.br=[]; S.torch="L"; S.time=0; S.sel=[];
+      S.onDone=()=>solve("🔦","All four across in 17 minutes! 🎉","The keeper handed you the torch to keep.");
+      open(`<h2>Get all four across in 17 minutes</h2>
+        <div id="bridgebox"></div>
+        <p class="bigtime" id="btime">0 min</p>
+        <p class="msg">Tap one or two travellers, then Go.</p>
+        <div class="row"><button class="btn" data-brggo>Go →</button>
+          <button class="btn ghost" data-brgreset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawBridge();
+    }
+  },
+
+  /* ---------- 35 · Two Jugs : measure exactly 4 ---------- */
+  {
+    name:"Two Jugs",
+    intro:"A well, two jugs and a very fussy lock. 🪣",
+    locked:"The lock wants exactly 4 litres in the big jug.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#20343f"/><rect y="450" width="800" height="150" fill="#2d4a58"/>
+      <circle cx="140" cy="300" r="70" fill="#14232b" stroke="#6f9aa8" stroke-width="10"/>
+      <text x="140" y="315" font-size="34" text-anchor="middle">💧</text>
+      ${sign({go:"clue",x:300,y:110,w:250,h:130,edge:"#6f9aa8",inner:
+        '<text x="425" y="156" font-size="19" text-anchor="middle">Leave exactly</text>'+
+        '<text x="425" y="196" font-size="34" text-anchor="middle">4 litres</text>'+
+        '<text x="425" y="224" font-size="17" text-anchor="middle">in the big jug</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="two jugs">
+        <path d="M330 300 L330 430 Q330 450 350 450 L410 450 Q430 450 430 430 L430 300Z" fill="#8fd6ff" opacity=".3" stroke="#cfe8f5" stroke-width="5"/>
+        <text x="380" y="480" font-size="20" text-anchor="middle" fill="#cfe8f5">5 L</text>
+        <path d="M480 340 L480 430 Q480 450 500 450 L545 450 Q565 450 565 430 L565 340Z" fill="#8fd6ff" opacity=".3" stroke="#cfe8f5" stroke-width="5"/>
+        <text x="522" y="480" font-size="20" text-anchor="middle" fill="#cfe8f5">3 L</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a frog"><text x="140" y="500" font-size="40">🐸</text></g>
+      ${door({frame:"#345a6b",panel:"#4b7d92",x:650,y:180,w:130,h:270})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe8f5">Room 35 · Two Jugs</text>`);
+    },
+    clue:()=>open(`<h2>Scratched into the lock</h2>
+      <p>"Exactly <b>4 litres</b> in the big jug. No marks on the sides — only 5 and 3."</p>
+      <p class="mini">You may fill a jug from the well, empty one out, or pour one into the other until it is full or the first runs dry.</p>
+      <div class="row"><button class="btn" data-close>Pouring…</button></div>`),
+    extra:()=>{ say("A frog watches from the well. It has seen people try this before. 🐸"); close(); },
+    puzzle(){
+      S.jugA=0; S.jugB=0;
+      S.onDone=()=>solve("🪣","Exactly 4 litres! 🎉","The lock drank the water and clicked open.");
+      open(`<h2>Get exactly 4 litres in the 5 L jug</h2>
+        <div id="jugbox"></div>
+        <div class="row">
+          <button class="btn ghost" data-jug="fa">Fill 5 L</button>
+          <button class="btn ghost" data-jug="fb">Fill 3 L</button>
+        </div>
+        <div class="row">
+          <button class="btn ghost" data-jug="ea">Empty 5 L</button>
+          <button class="btn ghost" data-jug="eb">Empty 3 L</button>
+        </div>
+        <div class="row">
+          <button class="btn alt" data-jug="ab">5 L → 3 L</button>
+          <button class="btn alt" data-jug="ba">3 L → 5 L</button>
+        </div>
+        <p class="msg">Any number of pours — take your time.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawJugs();
+    }
+  },
+
+  /* ---------- 36 · Two Guards : one of them always lies ---------- */
+  {
+    name:"Two Guards",
+    intro:"Two doors. Two guards. One of them never tells the truth. 🤨",
+    locked:"Pick the wrong door and you end up back here.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2a2036"/><rect y="460" width="800" height="140" fill="#3a2d4a"/>
+      <g class="hot" data-go="clue" tabindex="0" role="button" aria-label="the rules on the wall">
+        <rect x="300" y="90" width="260" height="130" rx="10" fill="#fffbee" stroke="#a88ac8" stroke-width="6"/>
+        <text x="430" y="132" font-size="18" text-anchor="middle">One guard always</text>
+        <text x="430" y="158" font-size="18" text-anchor="middle">tells the truth.</text>
+        <text x="430" y="188" font-size="18" text-anchor="middle">One always lies.</text>
+      </g>
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the two guards">
+        <rect x="250" y="250" width="140" height="190" rx="14" fill="#4a3d5e"/>
+        <text x="320" y="330" font-size="44" text-anchor="middle">💂</text>
+        <text x="320" y="380" font-size="18" text-anchor="middle" fill="#e6dcff">left guard</text>
+        <rect x="430" y="250" width="140" height="190" rx="14" fill="#4a3d5e"/>
+        <text x="500" y="330" font-size="44" text-anchor="middle">💂</text>
+        <text x="500" y="380" font-size="18" text-anchor="middle" fill="#e6dcff">right guard</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a dusty painting"><text x="120" y="300" font-size="40">🖼️</text></g>
+      ${door({frame:"#4a3d5e",panel:"#6b5a85",x:40,y:250,w:120,h:210})}
+      ${door({frame:"#4a3d5e",panel:"#6b5a85",x:640,y:250,w:120,h:210})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e6dcff">Room 36 · Two Guards</text>`);
+    },
+    clue:()=>open(`<h2>Carved on the wall</h2>
+      <p>One of the two guards <b>always tells the truth</b>. The other <b>always lies</b>.
+         You cannot tell which is which.</p>
+      <p>You may ask <b>one guard one question</b>, then choose a door.</p>
+      <p class="mini">A question whose answer is the same from either guard is the only one worth asking.</p>
+      <div class="row"><button class="btn" data-close>Thinking…</button></div>`),
+    extra:()=>{ say("A dusty painting of a third guard. Nobody mentions him. 🖼️"); close(); },
+    puzzle(){
+      S.asked=null;
+      S.onDone=()=>solve("🚪","The left door — exactly right! 🎉",
+        "Both guards answer \"No\" about the true exit, so you took the door they said no to.");
+      open(`<h2>Ask one question</h2>
+        <p class="mini">You are pointing at the <b>left</b> door.</p>
+        <div class="qlist">
+          <button class="qbtn" data-ask="0">"Is this door the exit?"</button>
+          <button class="qbtn" data-ask="1">"What would the <b>other</b> guard say if I asked whether this door is the exit?"</button>
+          <button class="qbtn" data-ask="2">"Are you the honest one?"</button>
+        </div>
+        <p class="msg"></p>
+        <div id="doorpick"></div>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+    }
+  },
+
+  /* ---------- 37 · Crate Room : push it onto the mark ---------- */
+  {
+    name:"Crate Room",
+    intro:"One crate, one mark on the floor, and no way to pull. 📦",
+    locked:"The crate has to sit on the mark.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#33302a"/><rect y="460" width="800" height="140" fill="#46423a"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#a89a7a",inner:
+        '<text x="180" y="196" font-size="18" text-anchor="middle">You can only PUSH</text>'+
+        '<text x="180" y="224" font-size="18" text-anchor="middle">the crate, never pull —</text>'+
+        '<text x="180" y="252" font-size="18" text-anchor="middle">so think about where</text>'+
+        '<text x="180" y="278" font-size="18" text-anchor="middle">you stand</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the crate floor">
+        <rect x="380" y="180" width="240" height="240" rx="10" fill="#24211c" stroke="#a89a7a" stroke-width="6"/>
+        <rect x="400" y="200" width="60" height="60" rx="6" fill="#5c574c"/>
+        <text x="500" y="320" font-size="40" text-anchor="middle">📦</text>
+        <text x="570" y="392" font-size="34" text-anchor="middle">❌</text>
+        <text x="430" y="248" font-size="30" text-anchor="middle">🧒</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="broom"><text x="150" y="420" font-size="40">🧹</text></g>
+      ${door({frame:"#5c574c",panel:"#7d7666",x:660,y:180,w:120,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e6dcc0">Room 37 · Crate Room</text>`);
+    },
+    clue:()=>open(`<h2>Scratched on the wall</h2>
+      <p>"You can <b>push</b> the crate, never pull it. To push it one way, you must
+         stand on the <b>opposite</b> side."</p>
+      <p class="mini">Push it into a corner and it is stuck — start over if that happens.</p>
+      <div class="row"><button class="btn" data-close>Right</button></div>`),
+    extra:()=>{ say("A broom. You could sweep, but the door still wouldn't open. 🧹"); close(); },
+    puzzle(){
+      S.sokP=[1,1]; S.sokC=[2,2]; S.sokT=[3,3];
+      S.sokW=[[3,1]];
+      S.onDone=()=>solve("📦","The crate is on the mark! 🎉","The floor rumbled and the far wall slid open.");
+      open(`<h2>Push the crate onto the ❌</h2>
+        <div class="gridp g4" id="sokgrid"></div>
+        <div class="dpad">
+          <button data-sok="u" style="grid-column:2;grid-row:1" aria-label="up">⬆️</button>
+          <button data-sok="l" style="grid-column:1;grid-row:2" aria-label="left">⬅️</button>
+          <button data-sok="d" style="grid-column:2;grid-row:2" aria-label="down">⬇️</button>
+          <button data-sok="r" style="grid-column:3;grid-row:2" aria-label="right">➡️</button>
+        </div>
+        <p class="msg">You move one square at a time.</p>
+        <div class="row"><button class="btn ghost" data-sokreset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawSok();
+    }
+  },
+
+  /* ---------- 38 · One Line : a path through every tile ---------- */
+  {
+    name:"One Line",
+    intro:"Sixteen tiles, and one unbroken line is supposed to cross them all. ➰",
+    locked:"Every tile, exactly once. Then the door opens.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#1b2b2a"/><rect y="460" width="800" height="140" fill="#26403e"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#6fa89a",inner:
+        '<text x="180" y="196" font-size="18" text-anchor="middle">Start at the green</text>'+
+        '<text x="180" y="224" font-size="18" text-anchor="middle">tile, end at the red,</text>'+
+        '<text x="180" y="252" font-size="18" text-anchor="middle">and step on every</text>'+
+        '<text x="180" y="278" font-size="18" text-anchor="middle">tile exactly once</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="tile floor">
+        <rect x="380" y="180" width="240" height="240" rx="10" fill="#0f1f1e" stroke="#6fa89a" stroke-width="6"/>
+        ${[0,1,2,3].map(r=>[0,1,2,3].map(c=>`<rect x="${394+c*56}" y="${194+r*56}" width="48" height="48" rx="6"
+          fill="${r===0&&c===0?'#3ddc97':r===0&&c===3?'#e05a5a':'#1c3533'}"/>`).join("")).join("")}
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="rope"><text x="150" y="420" font-size="40">🪢</text></g>
+      ${door({frame:"#2f5a55",panel:"#417d76",x:660,y:180,w:120,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfeee8">Room 38 · One Line</text>`);
+    },
+    clue:()=>open(`<h2>The rule of the line</h2>
+      <p>Begin on the <b>green</b> tile and finish on the <b>red</b> one, stepping on
+         <b>every</b> tile exactly once. Steps go up, down, left or right — never diagonally.</p>
+      <p class="mini">Tap the tile you are standing on to take a step back.</p>
+      <div class="row"><button class="btn" data-close>One line…</button></div>`),
+    extra:()=>{ say("A coil of rope. It would not help, but it looks encouraging. 🪢"); close(); },
+    puzzle(){
+      S.path=[[0,0]];
+      S.onDone=()=>solve("➰","One line through all sixteen! 🎉","The line glowed and the door swung open.");
+      open(`<h2>One line, every tile, once</h2>
+        <div class="gridp g4" id="pathgrid"></div>
+        <p class="msg">1 of 16 tiles.</p>
+        <div class="row"><button class="btn ghost" data-pathreset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawPath();
+    }
+  },
+
+  /* ---------- 39 · Fake Coin : two weighings ---------- */
+  {
+    name:"Fake Coin",
+    intro:"Eight identical coins. One of them is a fake. ⚖️",
+    locked:"Name the fake coin and the strongbox opens.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2b2618"/><rect y="460" width="800" height="140" fill="#3d3623"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:160,edge:"#c9a24a",inner:
+        '<text x="180" y="186" font-size="18" text-anchor="middle">The fake is LIGHTER</text>'+
+        '<text x="180" y="214" font-size="18" text-anchor="middle">than the rest.</text>'+
+        '<text x="180" y="248" font-size="18" text-anchor="middle">You may use the</text>'+
+        '<text x="180" y="276" font-size="18" text-anchor="middle">scales TWICE.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="coins and scales">
+        <rect x="360" y="180" width="280" height="90" rx="10" fill="#4a4128"/>
+        ${[0,1,2,3,4,5,6,7].map(i=>`<circle cx="${385+(i%4)*70}" cy="${210+Math.floor(i/4)*44}" r="18" fill="#c9a24a"/>`).join("")}
+        <path d="M420 330 L580 330" stroke="#c9a24a" stroke-width="8"/>
+        <path d="M500 330 L500 290" stroke="#c9a24a" stroke-width="8"/>
+        <circle cx="430" cy="350" r="22" fill="none" stroke="#c9a24a" stroke-width="5"/>
+        <circle cx="570" cy="350" r="22" fill="none" stroke="#c9a24a" stroke-width="5"/>
+        <text x="500" y="400" font-size="19" text-anchor="middle" fill="#ffe3a8">the scales</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="strongbox"><text x="150" y="420" font-size="40">🧰</text></g>
+      ${door({frame:"#5c4f2e",panel:"#7d6c40",x:660,y:180,w:120,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#ffe3a8">Room 39 · Fake Coin</text>`);
+    },
+    clue:()=>open(`<h2>The moneylender's note</h2>
+      <p>"One of the eight coins is a <b>fake</b>, and a fake is always <b>lighter</b>.
+         The scales may be used <b>twice</b> — no more."</p>
+      <p class="mini">Weighing three against three tells you a lot: if they balance, the fake is one of the two left out.</p>
+      <div class="row"><button class="btn" data-close>Two weighings</button></div>`),
+    extra:()=>{ say("The strongbox rattles. Something good is inside. 🧰"); close(); },
+    puzzle(){
+      S.fake=5; S.pan=[0,0,0,0,0,0,0,0]; S.weighs=0; S.accusing=false;
+      S.onDone=()=>solve("🪙","Coin 6 was the fake! 🎉","The strongbox opened on a pile of very real gold.");
+      open(`<h2>Find the fake in two weighings</h2>
+        <div id="coinbox"></div>
+        <p class="msg">Tap a coin to move it: left pan → right pan → off.</p>
+        <div class="row"><button class="btn" data-weigh>⚖️ Weigh</button>
+          <button class="btn ghost" data-coinclear>Take all off</button></div>
+        <div class="row"><button class="btn alt" data-accuse>That one is the fake!</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawCoins();
+    }
+  },
+
+  /* ---------- 40 · The Grand Lock : three locks in a row ---------- */
+  {
+    name:"The Grand Lock",
+    intro:"Forty rooms have led here. One door. Three locks. 🏰",
+    locked:"All three locks, one after another.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#140f24"/>${stars(70,21)}
+      <rect y="470" width="800" height="130" fill="#241a3f"/>
+      <path d="M0 470 Q400 420 800 470 L800 600 L0 600Z" fill="#2f2352"/>
+      ${sign({go:"clue",x:60,y:160,w:230,h:150,edge:"#c9a24a",inner:
+        '<text x="175" y="206" font-size="19" text-anchor="middle">Three locks:</text>'+
+        '<text x="175" y="238" font-size="19" text-anchor="middle">a word, a number,</text>'+
+        '<text x="175" y="270" font-size="19" text-anchor="middle">and a pattern</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the grand lock">
+        <rect x="340" y="150" width="280" height="300" rx="18" fill="#3a2d63" stroke="#c9a24a" stroke-width="8"/>
+        ${[0,1,2].map(i=>`<circle cx="480" cy="${215+i*95}" r="34" fill="#241a3f" stroke="#c9a24a" stroke-width="6"/>
+          <text x="480" y="${227+i*95}" font-size="26" text-anchor="middle">${["🔤","🔢","🌀"][i]}</text>`).join("")}
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="the fox, waiting"><text x="140" y="440" font-size="52">🦊</text></g>
+      ${door({frame:"#5b3f8a",panel:"#7d5cb0",x:660,y:150,w:120,h:310})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#ffe9b0">Room 40 · The Grand Lock</text>`);
+    },
+    clue:()=>open(`<h2>Above the great door</h2>
+      <p>"Three locks guard the last door: a <b>word</b>, a <b>number</b> and a <b>pattern</b>.
+         Open them in order."</p>
+      <p class="mini">Everything you need, you have already done once before.</p>
+      <div class="row"><button class="btn" data-close>Ready</button></div>`),
+    extra:()=>{ say("The fox sits by the door, tail wagging. It knew you would get here. 🦊"); close(); },
+    puzzle(){
+      S.stage=0;
+      S.grandDone=()=>solve("🏰","All three locks — the great door opens! 🎉","Forty rooms. Forty star keys. You are out.");
+      grandStage();
+    }
   }
   ];
 
@@ -1782,7 +2267,7 @@
       msg(leftBehind.includes("🦊") && leftBehind.includes("🐔")
           ? "Oh no — the fox ate the chicken! Starting over."
           : "Oh no — the chicken ate the corn! Starting over.");
-      setTimeout(()=>{ S.left=["🦊","🐔","🌽"]; S.right=[]; S.boat="L"; drawRiver(); },1200);
+      S.resetTimer=setTimeout(()=>{ S.left=["🦊","🐔","🌽"]; S.right=[]; S.boat="L"; drawRiver(); },1200);
       return;
     }
     if(S.right.length===3 && S.boat==="R") return void setTimeout(S.onDone,400);
@@ -1979,6 +2464,333 @@
     msg("");
   }
 
+  /* ---------- mastermind (room 31) ---------- */
+  const MMC={R:"#ff6b6b",Y:"#ffd93d",G:"#3ddc97",B:"#5ec8ff"};
+  function mmScore(g){
+    let black=0, white=0;
+    g.forEach((c,i)=>{ if(c===S.secret[i]) black++; else if(S.secret.includes(c)) white++; });
+    return {black,white};
+  }
+  function drawMM(){
+    const h=$("mmhist"); if(!h) return;
+    h.innerHTML = S.tries.map(t=>
+      '<div class="mmrow">'+t.g.map(c=>'<i style="background:'+MMC[c]+'"></i>').join("")+
+      '<span class="pegs2">'+"⚫".repeat(t.black)+"⚪".repeat(t.white)+
+      (t.black+t.white?"":"·")+'</span></div>').join("");
+    $("mmslots").innerHTML=[0,1,2].map(i=>
+      '<span class="slot2"'+(S.guess[i]?' style="background:'+MMC[S.guess[i]]+'"':'')+'></span>').join("");
+  }
+  function mmTap(b){
+    if(S.guess.length>=3) return msg("Three already — press Check, or Clear.");
+    const c=b.dataset.mm;
+    if(S.guess.includes(c)) return msg("No colour is used twice in the code.");
+    S.guess.push(c); drawMM(); msg("");
+  }
+  function mmCheck(){
+    if(S.guess.length<3) return msg("Pick three colours first.");
+    const sc=mmScore(S.guess);
+    S.tries.push({g:S.guess.slice(),...sc});
+    S.guess=[]; drawMM();
+    if(sc.black===3) return void setTimeout(S.onDone,350);
+    msg("Guess "+S.tries.length+": "+sc.black+" ⚫ and "+sc.white+" ⚪");
+  }
+
+  /* ---------- minefield (room 32) ---------- */
+  function mineCount(r,c){
+    let n=0;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(!dr&&!dc) continue;
+      if(S.mines.some(m=>m[0]===r+dr&&m[1]===c+dc)) n++;
+    }
+    return n;
+  }
+  function drawMines(){
+    const g=$("minegrid"); if(!g) return;
+    let h="";
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+      if(S.shown[r][c]) h+='<div class="fixed">'+mineCount(r,c)+'</div>';
+      else{
+        const f=S.flags.some(x=>x[0]===r&&x[1]===c);
+        h+='<button data-mine="'+r+'-'+c+'">'+(f?"🚩":"")+'</button>';
+      }
+    }
+    g.innerHTML=h;
+  }
+  function mineTap(b){
+    const [r,c]=b.dataset.mine.split("-").map(Number);
+    const i=S.flags.findIndex(x=>x[0]===r&&x[1]===c);
+    if(i>=0) S.flags.splice(i,1);
+    else{
+      if(S.flags.length>=3) return msg("That is already three flags — take one back first.");
+      S.flags.push([r,c]);
+    }
+    drawMines();
+    if(S.flags.length===3 && S.flags.every(f=>S.mines.some(m=>m[0]===f[0]&&m[1]===f[1])))
+      return void setTimeout(S.onDone,350);
+    if(S.flags.length===3){ wrong(); return msg("Three flags, but not all of them are right."); }
+    msg(S.flags.length+" of 3 flagged");
+  }
+
+  /* ---------- nonogram (room 33) ---------- */
+  function nonoClues(line){
+    const out=[]; let run=0;
+    line.forEach(v=>{ if(v) run++; else { if(run) out.push(run); run=0; } });
+    if(run) out.push(run);
+    return out.length?out:[0];
+  }
+  function drawNono(){
+    const box=$("nonobox"); if(!box) return;
+    const rows=S.nsol.map(r=>nonoClues(r).join(" "));
+    const cols=[0,1,2,3,4].map(c=>nonoClues(S.nsol.map(r=>r[c])).join(" "));
+    let h='<div class="nono">';
+    h+='<span class="nc"></span>'+cols.map(t=>'<span class="nc top">'+t+'</span>').join("");
+    for(let r=0;r<5;r++){
+      h+='<span class="nc side">'+rows[r]+'</span>';
+      for(let c=0;c<5;c++)
+        h+='<button class="ncell'+(S.ngrid[r][c]?" on":"")+'" data-nono="'+r+'-'+c+'"></button>';
+    }
+    box.innerHTML=h+'</div>';
+  }
+  function nonoTap(b){
+    const [r,c]=b.dataset.nono.split("-").map(Number);
+    S.ngrid[r][c]=S.ngrid[r][c]?0:1;
+    drawNono();
+    const done=S.nsol.every((row,r)=>row.every((v,c)=>v===S.ngrid[r][c]));
+    if(done) setTimeout(S.onDone,350);
+    else msg(S.ngrid.flat().filter(Boolean).length+" squares filled");
+  }
+
+  /* ---------- bridge at night (room 34) ---------- */
+  function drawBridge(){
+    const box=$("bridgebox"); if(!box) return;
+    const near = S.torch==="L" ? S.bl : S.br;
+    const FACE={1:"🧒",2:"👦",5:"👩",10:"👴"};
+    box.innerHTML=
+      '<div class="banks"><div class="bank"><b>this side</b><div class="stuff">'+
+        (S.bl.map(t=>FACE[t]+t).join(" ")||"—")+'</div>'+
+        (S.torch==="L"?'<div class="you">🔦</div>':'<div class="you dim">·</div>')+
+      '</div><div class="water">〰️</div><div class="bank"><b>far side</b><div class="stuff">'+
+        (S.br.map(t=>FACE[t]+t).join(" ")||"—")+'</div>'+
+        (S.torch==="R"?'<div class="you">🔦</div>':'<div class="you dim">·</div>')+
+      '</div></div>'+
+      '<div class="row">'+near.map(t=>
+        '<button class="big'+(S.sel.includes(t)?" picked":"")+'" data-brg="'+t+'">'+FACE[t]+'<br><small>'+t+'</small></button>'
+      ).join("")+'</div>';
+    $("btime").textContent=S.time+" min";
+  }
+  function brgTap(b){
+    const t=+b.dataset.brg;
+    const i=S.sel.indexOf(t);
+    if(i>=0) S.sel.splice(i,1);
+    else{
+      if(S.sel.length>=2) return msg("Only two may cross at a time.");
+      S.sel.push(t);
+    }
+    drawBridge(); msg("");
+  }
+  function brgGo(){
+    if(!S.sel.length) return msg("Choose one or two travellers.");
+    const from = S.torch==="L" ? S.bl : S.br;
+    const to   = S.torch==="L" ? S.br : S.bl;
+    S.sel.forEach(t=>{ from.splice(from.indexOf(t),1); to.push(t); });
+    S.time += Math.max(...S.sel);
+    S.sel=[]; S.torch = S.torch==="L" ? "R" : "L";
+    S.bl.sort((a,b)=>a-b); S.br.sort((a,b)=>a-b);
+    drawBridge();
+    if(S.bl.length===0){
+      if(S.time<=17) return void setTimeout(S.onDone,400);
+      wrong(); msg("Everyone is across, but it took "+S.time+" minutes. The torch went out!");
+      S.resetTimer=setTimeout(()=>{ S.bl=[1,2,5,10]; S.br=[]; S.torch="L"; S.time=0; S.sel=[]; drawBridge(); },1800);
+      return;
+    }
+    if(S.time>17){
+      wrong(); msg("Past 17 minutes — the torch is out. Starting again.");
+      S.resetTimer=setTimeout(()=>{ S.bl=[1,2,5,10]; S.br=[]; S.torch="L"; S.time=0; S.sel=[]; drawBridge(); },1600);
+      return;
+    }
+    msg(S.time+" minutes used");
+  }
+
+  /* ---------- two jugs (room 35) ---------- */
+  function drawJugs(){
+    const box=$("jugbox"); if(!box) return;
+    const jug=(v,cap,label)=>{
+      const h=150, fill=h*v/cap;
+      return `<div class="jug"><svg viewBox="0 0 70 ${h}" width="66" height="${h}">
+        <rect x="3" y="0" width="64" height="${h}" rx="10" fill="#e8f4fb"/>
+        <rect x="3" y="${h-fill}" width="64" height="${fill}" rx="8" fill="#5ec8ff"/>
+        ${[...Array(cap-1)].map((_,i)=>`<line x1="3" y1="${h-(i+1)*h/cap}" x2="67" y2="${h-(i+1)*h/cap}"
+           stroke="#b9d8e8" stroke-width="2"/>`).join("")}
+        <rect x="3" y="0" width="64" height="${h}" rx="10" fill="none" stroke="#7fa8bd" stroke-width="4"/>
+      </svg><b>${v} / ${cap} L</b><span class="mini">${label}</span></div>`;
+    };
+    box.innerHTML='<div class="jugs">'+jug(S.jugA,5,"big jug")+jug(S.jugB,3,"small jug")+'</div>';
+  }
+  function jugTap(b){
+    const a=b.dataset.jug;
+    if(a==="fa") S.jugA=5;
+    else if(a==="fb") S.jugB=3;
+    else if(a==="ea") S.jugA=0;
+    else if(a==="eb") S.jugB=0;
+    else if(a==="ab"){ const p=Math.min(S.jugA,3-S.jugB); S.jugA-=p; S.jugB+=p; }
+    else if(a==="ba"){ const p=Math.min(S.jugB,5-S.jugA); S.jugB-=p; S.jugA+=p; }
+    drawJugs();
+    if(S.jugA===4) return void setTimeout(S.onDone,400);
+    msg("Big jug: "+S.jugA+" L · small jug: "+S.jugB+" L");
+  }
+
+  /* ---------- two guards (room 36) ---------- */
+  function askTap(b){
+    const q=+b.dataset.ask;
+    // truth: the LEFT door is the exit. The guard you are asking is the liar — but it
+    // makes no difference for question 1, which is the whole point.
+    const ANS=[
+      'The guard shrugs and says: <b>"Yes."</b> … but you have no idea whether to believe him.',
+      'He answers: <b>"He would say — no."</b>',
+      'He answers: <b>"Yes, of course."</b> … which is exactly what a liar would say too.'
+    ];
+    S.asked=q;
+    msg("");
+    const box=$("doorpick");
+    box.innerHTML='<p style="font-size:18px">'+ANS[q]+'</p>'+
+      (q===1 ? '<p class="mini">Both guards answer the same way to that one — so the answer is trustworthy, even reversed.</p>' : '')+
+      '<div class="row"><button class="big" data-door2="L">🚪<br><small>left</small></button>'+
+      '<button class="big" data-door2="R">🚪<br><small>right</small></button></div>';
+  }
+  function door2Tap(b){
+    if(S.asked===null) return msg("Ask a question first.");
+    if(b.dataset.door2==="L") return void setTimeout(S.onDone,350);
+    wrong(); msg("That door leads straight back into this room. Try the other one.");
+  }
+
+  /* ---------- sokoban (room 37) ---------- */
+  function drawSok(){
+    const g=$("sokgrid"); if(!g) return;
+    let h="";
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+      const wall=S.sokW.some(w=>w[0]===r&&w[1]===c);
+      const p=S.sokP[0]===r&&S.sokP[1]===c, crate=S.sokC[0]===r&&S.sokC[1]===c;
+      const t=S.sokT[0]===r&&S.sokT[1]===c;
+      h+='<div class="'+(wall?"wall":t?"target":"")+'">'+(p?"🧒":crate?"📦":t?"❌":"")+'</div>';
+    }
+    g.innerHTML=h;
+  }
+  function sokTap(b){
+    const d=b.dataset.sok;
+    const dr=d==="u"?-1:d==="d"?1:0, dc=d==="l"?-1:d==="r"?1:0;
+    const nr=S.sokP[0]+dr, nc=S.sokP[1]+dc;
+    const wall=(r,c)=> r<0||r>3||c<0||c>3||S.sokW.some(w=>w[0]===r&&w[1]===c);
+    if(wall(nr,nc)) return msg("A wall.");
+    if(S.sokC[0]===nr && S.sokC[1]===nc){            // pushing the crate
+      const cr=nr+dr, cc=nc+dc;
+      if(wall(cr,cc)) return msg("The crate will not go that way.");
+      S.sokC=[cr,cc];
+    }
+    S.sokP=[nr,nc]; drawSok();
+    if(S.sokC[0]===S.sokT[0] && S.sokC[1]===S.sokT[1]) return void setTimeout(S.onDone,350);
+    msg("");
+  }
+
+  /* ---------- one line (room 38) ---------- */
+  function drawPath(){
+    const g=$("pathgrid"); if(!g) return;
+    let h="";
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+      const at=S.path.findIndex(p=>p[0]===r&&p[1]===c);
+      const head=at===S.path.length-1;
+      const cls=[at>=0?"on":"", head?"head":"", (r===0&&c===0)?"start":"", (r===0&&c===3)?"endcell":""]
+        .filter(Boolean).join(" ");
+      h+='<button class="'+cls+'" data-path="'+r+'-'+c+'">'+(at>=0?at+1:"")+'</button>';
+    }
+    g.innerHTML=h;
+  }
+  function pathTap(b){
+    const [r,c]=b.dataset.path.split("-").map(Number);
+    const head=S.path[S.path.length-1];
+    if(head[0]===r && head[1]===c){
+      if(S.path.length===1) return msg("You are standing on the start.");
+      S.path.pop(); drawPath(); return msg(S.path.length+" of 16 tiles.");
+    }
+    if(S.path.some(p=>p[0]===r&&p[1]===c)) return msg("You have already been there.");
+    if(Math.abs(head[0]-r)+Math.abs(head[1]-c)!==1) return msg("Only one step at a time — no diagonals.");
+    S.path.push([r,c]); drawPath();
+    if(S.path.length===16){
+      if(r===0&&c===3) return void setTimeout(S.onDone,350);
+      wrong(); return msg("All sixteen — but you must finish on the red tile.");
+    }
+    msg(S.path.length+" of 16 tiles.");
+  }
+
+  /* ---------- fake coin (room 39) ---------- */
+  function drawCoins(){
+    const box=$("coinbox"); if(!box) return;
+    const where=v=>v===1?"left pan":v===2?"right pan":"";
+    box.innerHTML='<div class="coins">'+S.pan.map((v,i)=>
+      '<button class="coin p'+v+'" data-coin="'+i+'">🪙<small>'+(i+1)+'</small></button>').join("")+'</div>'+
+      '<p class="mini">left pan: '+(S.pan.filter(v=>v===1).length)+' · right pan: '+
+      (S.pan.filter(v=>v===2).length)+' · weighings used: '+S.weighs+' of 2</p>'+
+      (S.accusing?'<p class="mini">Now tap the coin you believe is fake.</p>':'');
+  }
+  function coinTap(b){
+    const i=+b.dataset.coin;
+    if(S.accusing){
+      if(i===S.fake) return void setTimeout(S.onDone,350);
+      wrong(); S.accusing=false;
+      msg("That one is genuine. Put the coins back and think again.");
+      S.pan=[0,0,0,0,0,0,0,0]; S.weighs=0; drawCoins();
+      return;
+    }
+    S.pan[i]=(S.pan[i]+1)%3; drawCoins(); msg("");
+  }
+  function weighTap(){
+    if(S.accusing) return msg("You are naming the fake — tap a coin.");
+    if(S.weighs>=2) return msg("No weighings left. Name the fake coin.");
+    const L=S.pan.filter(v=>v===1).length, R=S.pan.filter(v=>v===2).length;
+    if(!L||!R) return msg("Put coins on both pans first.");
+    const w=side=>S.pan.reduce((a,v,i)=>a+(v===side?(i===S.fake?0.9:1):0),0);
+    const l=w(1), r=w(2);
+    S.weighs++;
+    const res = l<r ? "The LEFT pan rises — it is lighter."
+              : r<l ? "The RIGHT pan rises — it is lighter."
+              : "They balance exactly.";
+    drawCoins();
+    msg(res+"  ("+S.weighs+" of 2 used)");
+  }
+
+  /* ---------- the grand lock (room 40) ---------- */
+  function grandStage(){
+    const dots=n=>[0,1,2].map(i=>i<n?"🔓":"🔒").join(" ");
+    if(S.stage===0){
+      S.showGot=true;
+      order(["G","O","L","D"], ()=>{ S.stage=1; grandStage(); });
+      open(`<h2>Lock 1 — the word</h2><p class="mini">${dots(0)}</p>
+        <p>Every letter has slipped <b>two</b> steps forward:</p>
+        <div class="clue">I Q N F</div>
+        <div class="row">${["D","F","G","I","L","N","O","Q"].map(c=>
+          '<button class="big" data-ord="'+c+'">'+c+'</button>').join("")}</div>
+        <p class="msg">Step each letter back two.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+    } else if(S.stage===1){
+      S.code=7; S.codeLen=1;
+      S.onDone=()=>{ S.stage=2; grandStage(); };
+      open(`<h2>Lock 2 — the number</h2><p class="mini">${dots(1)}</p>
+        <p>"Double me, then add six, and you have twenty. What am I?"</p>
+        <div class="screen" id="scr">_</div>${keypad(false)}
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+    } else {
+      S.onDone=S.grandDone;
+      open(`<h2>Lock 3 — the pattern</h2><p class="mini">${dots(2)}</p>
+        <div class="clue">1 · 4 · 9 · 16 · 25 · ?</div>
+        <div class="row">
+          <button class="big" data-pick="no">30</button>
+          <button class="big" data-pick="ok">36</button>
+          <button class="big" data-pick="no">35</button>
+        </div>
+        <p class="msg">1×1, 2×2, 3×3 …</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+    }
+  }
+
   /* ---------- rendering & flow ---------- */
   function render(){
     const R=ROOMS[S.room];
@@ -2018,7 +2830,8 @@
 
   function goRoom(n){
     S.room=n; S.want=[]; S.got=[]; S.picked=[]; S.code=null; S.busy=false;
-    S.showGot=false; S.codeLen=1; S.entry=""; S.held=null; S.sel=null;
+    S.showGot=false; S.codeLen=1; S.entry=""; S.held=null; S.sel=null; S.asked=null; S.accusing=false;
+    clearTimeout(S.resetTimer);
     close(); render(); say(ROOMS[n].intro);
     if(ROOMS[n].banner)
       open('<h2>'+ROOMS[n].banner+'</h2><p>Same idea as before: find the clue, solve the puzzle, '+
@@ -2033,8 +2846,8 @@
   function startScreen(){
     const canResume = S.furthest>0;
     open('<h2>⭐ Star Key Escape</h2>'+
-      '<p>'+ROOMS.length+' rooms, '+ROOMS.length+' star keys.<br>1–10 gentle · 11–20 for bigger kids · '+
-      '21–30 proper brain-benders.</p>'+
+      '<p>'+ROOMS.length+' rooms, '+ROOMS.length+' star keys.<br>1–10 gentle · 11–20 bigger kids · '+
+      '21–30 brain-benders · 31–40 grandmaster.</p>'+
       '<div class="map">'+ROOMS.map((r,i)=>'<b'+(i<=S.furthest?' class="done"':'')+'>'+(i+1)+'</b>').join("")+'</div>'+
       '<div class="row">'+
         (canResume?'<button class="btn" data-resume>Continue — Room '+(S.furthest+1)+'</button>':'')+
@@ -2055,10 +2868,21 @@
     if(S.busy) return;                       // ignore taps while a sequence is playing
     if(b.hasAttribute("data-wipe")){ S.entry=""; $("scr").textContent="_"; return; }
     if(b.hasAttribute("data-lampreset")){ S.lamps=[0,0,0,0,0]; drawLamps(); return msg(""); }
-    if(b.hasAttribute("data-riverreset")){ S.left=["🦊","🐔","🌽"]; S.right=[]; S.boat="L"; drawRiver(); return msg(""); }
+    if(b.hasAttribute("data-riverreset")){ clearTimeout(S.resetTimer); S.left=["🦊","🐔","🌽"]; S.right=[]; S.boat="L"; drawRiver(); return msg(""); }
     if(b.hasAttribute("data-hanoireset")){ S.pegs=[[3,2,1],[],[]]; S.held=null; S.moves=0; drawHanoi(); return msg(""); }
     if(b.hasAttribute("data-guardreset")){ S.guards=[]; drawGuards(); return msg(""); }
     if(b.hasAttribute("data-slidereset")){ scrambleSlide(60); drawSlide(); return msg(""); }
+    if(b.hasAttribute("data-mmgo"))    return mmCheck();
+    if(b.hasAttribute("data-mmclear")){ S.guess=[]; drawMM(); return msg(""); }
+    if(b.hasAttribute("data-mineclear")){ S.flags=[]; drawMines(); return msg(""); }
+    if(b.hasAttribute("data-nonoclear")){ S.ngrid=S.ngrid.map(r=>r.map(()=>0)); drawNono(); return msg(""); }
+    if(b.hasAttribute("data-brggo"))   return brgGo();
+    if(b.hasAttribute("data-brgreset")){ clearTimeout(S.resetTimer); S.bl=[1,2,5,10]; S.br=[]; S.torch="L"; S.time=0; S.sel=[]; drawBridge(); return msg(""); }
+    if(b.hasAttribute("data-sokreset")){ S.sokP=[1,1]; S.sokC=[2,2]; drawSok(); return msg(""); }
+    if(b.hasAttribute("data-pathreset")){ S.path=[[0,0]]; drawPath(); return msg("1 of 16 tiles."); }
+    if(b.hasAttribute("data-weigh"))   return weighTap();
+    if(b.hasAttribute("data-coinclear")){ S.pan=[0,0,0,0,0,0,0,0]; drawCoins(); return msg(""); }
+    if(b.hasAttribute("data-accuse")){ S.accusing=true; drawCoins(); return msg("Tap the coin you think is fake."); }
     if(b.dataset.ord  !== undefined) return ordTap(b);
     if(b.dataset.pick !== undefined) return pickTap(b);
     if(b.dataset.num  !== undefined) return numTap(b);
@@ -2075,6 +2899,16 @@
     if(b.dataset.tray !== undefined) return trayTap(b);
     if(b.dataset.mcell!== undefined) return mcellTap(b);
     if(b.dataset.slide!== undefined) return slideTap(b);
+    if(b.dataset.mm   !== undefined) return mmTap(b);
+    if(b.dataset.mine !== undefined) return mineTap(b);
+    if(b.dataset.nono !== undefined) return nonoTap(b);
+    if(b.dataset.brg  !== undefined) return brgTap(b);
+    if(b.dataset.jug  !== undefined) return jugTap(b);
+    if(b.dataset.ask  !== undefined) return askTap(b);
+    if(b.dataset.door2!== undefined) return door2Tap(b);
+    if(b.dataset.sok  !== undefined) return sokTap(b);
+    if(b.dataset.path !== undefined) return pathTap(b);
+    if(b.dataset.coin !== undefined) return coinTap(b);
   });
   scrim.addEventListener("click", e=>{
     if(e.target!==scrim) return;

@@ -1,17 +1,17 @@
 # ⭐ Star Key Escape
 
-A friendly **room escape game for kids**. Thirty rooms, thirty star keys, and no
-way to lose — a wrong answer just wiggles and lets you try again.
+A **room escape game** that starts out for small kids and ends up somewhere their
+parents will need a pencil. Forty rooms, forty star keys, and no way to lose — a
+wrong answer just wiggles and lets you try again.
 
 **▶ Play: https://ctbot000.github.io/room-escape-game-for-kids/**
-
-Three difficulty tiers, so the game grows with the player:
 
 | Tier | Rooms | Roughly |
 |------|-------|---------|
 | Little Explorer | 1–10 | ages 5–8 |
 | Big Adventure | 11–20 | ages 8–11 |
-| Master Escaper | 21–30 | ages 10+ (and grown-ups) |
+| Master Escaper | 21–30 | ages 10+ |
+| Grandmaster | 31–40 | teens and grown-ups |
 
 ## Part 1 — Little Explorer
 
@@ -58,17 +58,33 @@ Three difficulty tiers, so the game grows with the player:
 | 29 | Magic Square | Nine numbers, every line adding to 15 | arithmetic search |
 | 30 | The Final Gate | Slide the tiles into order, 1 to 8 | the 8-puzzle |
 
+## Part 4 — Grandmaster
+
+| # | Room | Puzzle | Skill |
+|---|------|--------|-------|
+| 31 | Code Breaker | Mastermind — three colours, ⚫ and ⚪ feedback | hypothesis testing |
+| 32 | Minefield | Deduce where all three mines are; never a guess | constraint logic |
+| 33 | Pixel Gate | 5×5 nonogram with row and column clues | line logic |
+| 34 | Bridge at Night | Four travellers, one torch, 17 minutes | optimisation |
+| 35 | Two Jugs | Measure exactly 4 L with a 5 L and a 3 L jug | state search |
+| 36 | Two Guards | One always lies — ask the one question that works | self-reference |
+| 37 | Crate Room | Sokoban: you can push, never pull | planning ahead |
+| 38 | One Line | Cross all sixteen tiles, once each, green to red | Hamiltonian path |
+| 39 | Fake Coin | Find the light coin among eight in two weighings | information theory |
+| 40 | The Grand Lock | Three locks: a word, a number and a pattern | everything at once |
+
 Every room has the same shape, so a child learns it once: a **clue** to look at,
 a **puzzle** to solve, and a **door** that opens when the puzzle is done. There
 is one extra thing to poke at in each room, just for fun.
 
-## Made for small hands
+## How it is built
 
 - Big tap targets, emoji and SVG art, no text a 6-year-old can't skip.
 - Nothing is ever lost — wrong answers wiggle, and every puzzle can be reset.
 - Progress is saved, so you can close the tab and **Continue** later.
 - Works with mouse, touch, and keyboard (Tab + Enter); Esc closes a popup.
 - One file, no build step, no dependencies, works offline.
+- Every constructed puzzle is checked for solvability, not just eyeballed.
 
 ## Run it locally
 
