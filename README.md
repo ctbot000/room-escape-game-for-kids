@@ -1,7 +1,7 @@
 # ⭐ Star Key Escape
 
 A **room escape game** that starts out for small kids and ends up somewhere their
-parents will need a pencil. Seventy rooms, seventy star keys, and no way to lose — a
+parents will need a pencil. Eighty rooms, eighty star keys, and no way to lose — a
 wrong answer just wiggles and lets you try again.
 
 **▶ Play: https://ctbot000.github.io/room-escape-game-for-kids/**
@@ -15,6 +15,7 @@ wrong answer just wiggles and lets you try again.
 | Legend | 41–50 | the classics, at full size |
 | Mythic | 51–60 | newspaper-puzzle-page hard |
 | Ascendant | 61–70 | the back page, on a Saturday |
+| Apex | 71–80 | the puzzle magazine's last pages |
 
 ## Part 1 — Little Explorer
 
@@ -120,6 +121,21 @@ wrong answer just wiggles and lets you try again.
 | 68 | Battleships | Find a fleet of four from the row and column counts | elimination |
 | 69 | Cryptogram | A shuffled alphabet and three letters to start from | pattern reading |
 | 70 | Sudoku Nine | The full 9×9, 32 givens, one solution | the classic |
+
+## Part 8 — Apex
+
+| # | Room | Puzzle | Skill |
+|---|------|--------|-------|
+| 71 | Numberlink | Join four pairs, cover every square, never cross | path planning |
+| 72 | Great Nonogram | 10×10 — and someone you know is hiding in it | line logic |
+| 73 | Binary Hall | Takuzu: three of each per line, never three in a row | binary logic |
+| 74 | Killer Sudoku | 6×6 from cage sums alone — not one given digit | arithmetic + sudoku |
+| 75 | Word Square | Four words across that read the same downwards | words |
+| 76 | Word Ladder | COLD → WARM, one letter at a time | words |
+| 77 | Three Islanders | Knights and knaves: only one tells the truth | formal logic |
+| 78 | Shikaku | Cut the floor into rectangles, one number each | division |
+| 79 | Suguru | Regions count up from 1; equal numbers may not touch | placement |
+| 80 | Five Houses, Complete | The full fifteen-clue riddle. Who owns the fish? | the classic |
 
 Every room has the same shape, so a child learns it once: a **clue** to look at,
 a **puzzle** to solve, and a **door** that opens when the puzzle is done. There
