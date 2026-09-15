@@ -559,11 +559,27 @@
   /* ---------- small helpers ---------- */
   function say(t){ $("say").textContent = t; }
   function give(item){ if(item && !S.bag.includes(item)) S.bag.push(item); drawBag(); }
+  // progress is the source of truth: the bag is every souvenir up to the furthest room
+  function restoreBag(){ S.bag = GIFTS.slice(0, Math.min(S.furthest,ROOMS.length)); drawBag(); }
   function drawBag(){
     $("bag").innerHTML = S.bag.length
       ? S.bag.map(e=>'<span class="item">'+e+'</span>').join("")
       : '<span style="opacity:.7;font-size:14px">empty</span>';
   }
+  // the souvenir each room hands over, in room order — mirrors the solve() calls,
+  // so the bag can be rebuilt from progress alone after a refresh
+  const GIFTS = [
+    "🔑","🗝️","🍀","🛰️","🔱","🦴","🍫","❄️","💰","🪄",   // 1–10
+    "⏰","📕","🎼","⚙️","🪞","⚖️","🔭","💎","🧪","🐲",   // 11–20
+    "🔢","🔠","🛶","💍","🐈","🚰","🌉","🛡️","🔮","🏆",   // 21–30
+    "🔓","💣","🧩","🔦","🪣","🚪","📦","➰","🪙","🏰",   // 31–40
+    "🦓","🔡","🚗","♞","🔥","🧫","💡","🔺","➗","🏙️",   // 41–50
+    "6️⃣","⏩","🩶","⛺","🏝️","🏵️","🫗","♚","🏗️","🏘️",   // 51–60
+    "🧱","➕","🕯️","⭐","🁢","🚣","🔐","🚢","🔏","🎓",   // 61–70
+    "🔌","🖼️","🔲","♾️","🔤","🪜","🗿","▭","🧮","🐟",   // 71–80
+    "⭕","🪨","🎚️","🌊","📶","🧲","✉️","🪢","⬛","🔟",   // 81–90
+    "📿","🟫","👁️","🏚️","🥪","🀄","🃏","🪆","⚪","🏅"    // 91–100
+  ];
   const TIERS=["Little Explorer","Big Adventure","Master Escaper","Grandmaster","Legend",
                "Mythic","Ascendant","Apex","Zenith","The Century"];
   const tierOf=n=>TIERS[Math.min(Math.floor(n/10),TIERS.length-1)];
@@ -7979,7 +7995,7 @@
   }
 
   function reset(){
-    S.keys=S.furthest; S.bag=[]; S.solved={}; drawBag(); drawProgress(); goRoom(0);
+    S.keys=S.furthest; S.solved={}; restoreBag(); drawProgress(); goRoom(0);
   }
 
   // every room up to the furthest one reached is open to visit again
@@ -8027,7 +8043,7 @@
     if(b.hasAttribute("data-next"))   return goRoom(S.room+1);
     if(b.hasAttribute("data-again"))  return reset();
     if(b.hasAttribute("data-start"))  return reset();
-    if(b.hasAttribute("data-resume")){ S.keys=S.furthest; S.bag=[]; S.solved={}; drawBag(); drawProgress(); return goRoom(resumeRoom()); }
+    if(b.hasAttribute("data-resume")){ S.keys=S.furthest; S.solved={}; restoreBag(); drawProgress(); return goRoom(resumeRoom()); }
     if(b.hasAttribute("data-rooms"))  return roomPicker();
     if(b.dataset.goto !== undefined)  return goRoom(+b.dataset.goto);
     if(b.hasAttribute("data-replay")) return playSeq();
@@ -8213,7 +8229,7 @@
   });
 
   /* ---------- boot ---------- */
-  loadSave(); S.keys=S.furthest; drawBag(); drawProgress(); render(); startScreen();
+  loadSave(); S.keys=S.furthest; restoreBag(); drawProgress(); render(); startScreen();
 })();
 </script>
 </body>
