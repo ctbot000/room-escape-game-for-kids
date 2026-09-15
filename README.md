@@ -1,7 +1,7 @@
 # ⭐ Star Key Escape
 
 A **room escape game** that starts out for small kids and ends up somewhere their
-parents will need a pencil. Fifty rooms, fifty star keys, and no way to lose — a
+parents will need a pencil. Sixty rooms, sixty star keys, and no way to lose — a
 wrong answer just wiggles and lets you try again.
 
 **▶ Play: https://ctbot000.github.io/room-escape-game-for-kids/**
@@ -13,6 +13,7 @@ wrong answer just wiggles and lets you try again.
 | Master Escaper | 21–30 | ages 10+ |
 | Grandmaster | 31–40 | teens and grown-ups |
 | Legend | 41–50 | the classics, at full size |
+| Mythic | 51–60 | newspaper-puzzle-page hard |
 
 ## Part 1 — Little Explorer
 
@@ -88,6 +89,21 @@ wrong answer just wiggles and lets you try again.
 | 48 | Peg Solitaire | 15-hole triangle, leave exactly one peg | search with pruning |
 | 49 | Cage Grid | KenKen — Latin square plus arithmetic cages | constraint solving |
 | 50 | Skyline | Skyscrapers — build to the visibility clues | deduction |
+
+## Part 6 — Mythic
+
+| # | Room | Puzzle | Skill |
+|---|------|--------|-------|
+| 51 | Sudoku Six | 6×6 sudoku with 2×3 blocks, 14 givens | constraint logic |
+| 52 | Futoshiki | 5×5 Latin square with inequality arrows | ordered deduction |
+| 53 | Hitori | Shade out the repeats, keep the rest connected | three rules at once |
+| 54 | Tents and Trees | One tent per tree, none touching, counts given | matching |
+| 55 | Bridges | Hashiwokakero — join eight islands into one | degrees + connectivity |
+| 56 | Twelve Coins | The fake may be heavy *or* light; three weighings | information theory |
+| 57 | Three Jugs | 8, 5 and 3 litres, no tap — split it 4 and 4 | state search |
+| 58 | Mate in One | A real position; find the mating move | chess |
+| 59 | Warehouse | Sokoban with two crates | planning |
+| 60 | Five Houses | The full riddle: ten clues, colours, pets, drinks | logic grid |
 
 Every room has the same shape, so a child learns it once: a **clue** to look at,
 a **puzzle** to solve, and a **door** that opens when the puzzle is done. There

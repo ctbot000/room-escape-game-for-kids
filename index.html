@@ -207,6 +207,42 @@
   .sky button{width:40px; height:40px; border-radius:8px; background:#fff; border:2px solid #cdc2f0;
     font-size:19px; font-weight:800; color:#3a2f5e}
 
+  /* mythic-tier puzzle bits */
+  .gridp.g6{grid-template-columns:repeat(6,40px)}
+  .gridp.g6 button,.gridp.g6 div{width:40px; height:40px; font-size:18px}
+  .gridp button.shaded{background:#3a2f5e; color:#fff; border-color:#3a2f5e}
+  .futo{display:inline-grid; grid-template-columns:repeat(9,auto); gap:2px; margin:10px auto; align-items:center}
+  .fcell{width:40px; height:40px; border-radius:8px; background:#fff; border:2px solid #cdc2f0;
+    font-size:19px; font-weight:800; color:#3a2f5e; display:flex; align-items:center; justify-content:center}
+  .fcell.fixed{background:#cdc2f0}
+  .fcell.picked{outline:3px solid var(--pink)}
+  .fsign{width:16px; height:16px; font-size:13px; color:#8a5ac6; font-weight:800;
+    display:flex; align-items:center; justify-content:center}
+  .fsign.v{width:40px; height:14px}
+  .tentgrid{display:inline-grid; grid-template-columns:repeat(6,42px); gap:4px; margin:10px auto}
+  .tentgrid .sc{font-size:14px; font-weight:800; color:#2f6b23; display:flex; align-items:center; justify-content:center}
+  .tcell{width:42px; height:42px; border-radius:8px; background:#eaf6e6; border:2px solid #9ecb96;
+    font-size:20px; display:flex; align-items:center; justify-content:center}
+  .tcell.tent{background:#ffe9a8; border-color:#e8c07a}
+  .brsvg{width:230px; height:230px; display:block; margin:6px auto}
+  .brtaps{display:grid; grid-template-columns:repeat(4,1fr); gap:5px; max-width:280px; margin:6px auto}
+  .brbtn{background:#efe9ff; border-radius:10px; padding:5px 0; font-weight:800; font-size:14px;
+    box-shadow:0 3px 0 #cdc2f0; display:flex; flex-direction:column; line-height:1.1}
+  .brbtn small{font-size:11px; opacity:.7}
+  .brbtn.ok{background:#d7f7e9; box-shadow:0 3px 0 #3ddc97}
+  .brbtn.picked{outline:3px solid var(--pink)}
+  .chess{display:inline-grid; grid-template-columns:repeat(8,32px); gap:0; margin:10px auto;
+    border:3px solid #8a7358; border-radius:4px; overflow:hidden}
+  .chess .sq{width:32px; height:32px; background:#e8dcc0; font-size:21px; line-height:1;
+    display:flex; align-items:center; justify-content:center; border-radius:0}
+  .chess .sq.dark{background:#a8906a}
+  .chess .sq.picked{outline:3px solid var(--pink); outline-offset:-3px}
+  .einstein{display:inline-grid; grid-template-columns:56px repeat(5,46px); gap:4px; margin:10px auto}
+  .einstein .zl{font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:flex-end; padding-right:3px}
+  .einstein .zh{font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center}
+  .einstein button{height:44px; border-radius:9px; background:#fff; border:2px solid #cdc2f0; font-size:21px}
+  .coins.c12{grid-template-columns:repeat(6,1fr); max-width:300px}
+
   @media (max-width:520px){
     .title{font-size:17px} .say{font-size:15px} .stage{max-height:48vh} .big{font-size:32px; min-width:60px}
     .nono{--nc:32px; grid-template-columns:34px repeat(5,var(--nc)); gap:3px}
@@ -221,6 +257,18 @@
     .sky{grid-template-columns:repeat(6,34px)}
     .sky button{width:34px; height:34px; font-size:17px}
     .tubes{gap:7px} .tube i{width:22px; height:22px}
+    .gridp.g6{grid-template-columns:repeat(6,34px)}
+    .gridp.g6 button,.gridp.g6 div{width:34px; height:34px; font-size:15px}
+    .fcell{width:34px; height:34px; font-size:16px}
+    .fsign.v{width:34px}
+    .tentgrid{grid-template-columns:repeat(6,36px)}
+    .tcell{width:36px; height:36px; font-size:17px}
+    .chess{grid-template-columns:repeat(8,27px)}
+    .chess .sq{width:27px; height:27px; font-size:18px}
+    .einstein{grid-template-columns:48px repeat(5,38px)}
+    .einstein button{height:38px; font-size:18px}
+    .brsvg{width:200px; height:200px}
+    .coins.c12{max-width:250px}
     .coins{max-width:240px}
   }
 </style>
@@ -2544,6 +2592,452 @@
         <div class="row"><button class="btn alt" data-close>Later</button></div>`);
       drawSky();
     }
+  },
+
+  /* ---------- 51 · Sudoku Six ---------- */
+  {
+    name:"Sudoku Six",
+    banner:"Part 6 — Mythic. Fourteen clues and a lot of patience. 🗝️",
+    intro:"Six by six, and not nearly enough numbers filled in. 6️⃣",
+    locked:"Finish the grid and the door will believe you.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#1b2430"/><rect y="460" width="800" height="140" fill="#26323f"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#7f9fb8",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">1 to 6 in every row,</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">every column, and</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">every 2x3 block</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the grid">
+        <rect x="380" y="170" width="250" height="250" rx="10" fill="#eef4fa" stroke="#7f9fb8" stroke-width="6"/>
+        ${[0,1,2,3,4,5].map(r=>[0,1,2,3,4,5].map(c=>`<rect x="${390+c*40}" y="${180+r*40}" width="36" height="36" rx="4"
+          fill="${(Math.floor(r/2)+Math.floor(c/3))%2?'#dae6f2':'#f4f8fc'}"/>`).join("")).join("")}
+        <text x="505" y="448" font-size="19" text-anchor="middle" fill="#cfe0f0">six by six</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a pencil"><text x="150" y="420" font-size="40">✏️</text></g>
+      ${door({frame:"#33455a",panel:"#4d6580",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe0f0">Room 51 · Sudoku Six</text>`);
+    },
+    clue:()=>open(`<h2>The rule, as ever</h2>
+      <p>Every <b>row</b>, every <b>column</b> and every <b>2×3 block</b> holds 1 to 6, once each.</p>
+      <p class="mini">Tap a square, then tap a number. Shaded squares were given to you.</p>
+      <div class="row"><button class="btn" data-close>Pencil ready</button></div>`),
+    extra:()=>{ say("A pencil, well chewed. Somebody found this hard too. ✏️"); close(); },
+    puzzle(){
+      S.s6fix=[[0,0,3,0,0,0],[0,0,0,1,2,0],[2,0,0,0,6,0],[0,6,0,2,0,4],[0,4,0,6,0,2],[6,0,2,0,0,5]];
+      S.s6=S.s6fix.map(r=>r.slice()); S.s6sel=null;
+      S.onDone=()=>solve("6️⃣","Every row, column and block! 🎉","The grid dissolved and left a brass six behind.");
+      open(`<h2>Fill the six-by-six</h2>
+        <div class="gridp g6" id="s6grid"></div>
+        <div class="row" id="s6pad"></div>
+        <p class="msg">Tap a square, then a number.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawS6();
+    }
+  },
+
+  /* ---------- 52 · Futoshiki ---------- */
+  {
+    name:"Futoshiki",
+    intro:"A Latin square with arrows between the squares. ⏩",
+    locked:"Every square filled, every arrow obeyed.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2a1f2e"/><rect y="460" width="800" height="140" fill="#3a2c40"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#b08fc8",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">1 to 5 in every row</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">and column, and the</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">arrows point at the</text>'+
+        '<text x="180" y="280" font-size="17" text-anchor="middle">BIGGER number</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the square">
+        <rect x="390" y="180" width="230" height="230" rx="10" fill="#faf2ff" stroke="#b08fc8" stroke-width="6"/>
+        ${[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>`<rect x="${402+c*44}" y="${192+r*44}" width="38" height="38" rx="4" fill="#efe4f8"/>`).join("")).join("")}
+        <text x="505" y="438" font-size="19" text-anchor="middle" fill="#e6d9f0">five by five</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="an arrow"><text x="150" y="420" font-size="40">➡️</text></g>
+      ${door({frame:"#4a3555",panel:"#6b4d7d",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e6d9f0">Room 52 · Futoshiki</text>`);
+    },
+    clue:()=>open(`<h2>Reading the arrows</h2>
+      <p>1 to 5 in every row and column, once each. An arrow between two squares
+         always points at the <b>bigger</b> one.</p>
+      <p class="mini">So <b>2 ▸ 5</b> is fine and <b>5 ▸ 2</b> is not. Start where an arrow chain is longest.</p>
+      <div class="row"><button class="btn" data-close>Understood</button></div>`),
+    extra:()=>{ say("An arrow scratched into the wall. It points nowhere useful. ➡️"); close(); },
+    puzzle(){
+      S.fuGiv=[[2,2,5],[3,4,3],[1,3,5],[1,2,4],[0,0,1],[1,0,2]];
+      S.fuLT=[[1,1,1,2],[1,1,2,1],[0,1,0,2],[0,1,1,1],[0,0,0,1],[0,0,1,0]];
+      S.fu=[0,1,2,3,4].map(()=>[0,0,0,0,0]);
+      S.fuGiv.forEach(([r,c,v])=>S.fu[r][c]=v);
+      S.fusel=null;
+      S.onDone=()=>solve("⏩","Every row, column and arrow! 🎉","The arrows all turned green and the lock gave way.");
+      open(`<h2>Fill it in, mind the arrows</h2>
+        <div id="fubox"></div>
+        <div class="row" id="fupad"></div>
+        <p class="msg">Tap a square, then a number.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawFuto();
+    }
+  },
+
+  /* ---------- 53 · Hitori : shade out the repeats ---------- */
+  {
+    name:"Hitori",
+    intro:"A grid of numbers with rather too many repeats. 🩶",
+    locked:"Shade the right squares and the wall will slide.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#232323"/><rect y="460" width="800" height="140" fill="#2f2f2f"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:170,edge:"#b0b0b0",inner:
+        '<text x="180" y="184" font-size="16" text-anchor="middle">1. no number twice in</text>'+
+        '<text x="180" y="208" font-size="16" text-anchor="middle">a row or column</text>'+
+        '<text x="180" y="238" font-size="16" text-anchor="middle">2. no two shaded</text>'+
+        '<text x="180" y="262" font-size="16" text-anchor="middle">squares touching</text>'+
+        '<text x="180" y="292" font-size="16" text-anchor="middle">3. the rest joined up</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="number wall">
+        <rect x="390" y="180" width="230" height="230" rx="10" fill="#f4f4f4" stroke="#b0b0b0" stroke-width="6"/>
+        ${[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>`<rect x="${402+c*44}" y="${192+r*44}" width="38" height="38" rx="4"
+          fill="#e4e4e4"/><text x="${421+c*44}" y="${218+r*44}" font-size="20" text-anchor="middle" fill="#333">${[[1,5,3,4,4],[5,5,2,3,1],[1,4,1,2,2],[4,1,2,5,4],[2,2,5,1,4]][r][c]}</text>`).join("")).join("")}
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a paint roller"><text x="150" y="420" font-size="40">🖌️</text></g>
+      ${door({frame:"#4a4a4a",panel:"#6b6b6b",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e8e8e8">Room 53 · Hitori</text>`);
+    },
+    clue:()=>open(`<h2>Three rules at once</h2>
+      <p>1. Among the <b>unshaded</b> squares, no number may repeat in a row or column.<br>
+         2. No two <b>shaded</b> squares may touch side by side.<br>
+         3. All the unshaded squares must stay <b>joined together</b> in one piece.</p>
+      <p class="mini">Start with a number that appears three times in one line — at least one of them must be shaded.</p>
+      <div class="row"><button class="btn" data-close>Three rules</button></div>`),
+    extra:()=>{ say("A paint roller, dry as a bone. The shading is metaphorical. 🖌️"); close(); },
+    puzzle(){
+      S.hiGrid=[[1,5,3,4,4],[5,5,2,3,1],[1,4,1,2,2],[4,1,2,5,4],[2,2,5,1,4]];
+      S.hi=[0,1,2,3,4].map(()=>[0,0,0,0,0]);
+      S.onDone=()=>solve("🩶","Shaded exactly right! 🎉","The unshaded squares lit up as one connected path.");
+      open(`<h2>Shade out the repeats</h2>
+        <div class="gridp g5" id="higrid"></div>
+        <p class="msg">Tap a square to shade or unshade it.</p>
+        <div class="row"><button class="btn ghost" data-hiclear>Clear</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawHitori();
+    }
+  },
+
+  /* ---------- 54 · Tents and Trees ---------- */
+  {
+    name:"Tents and Trees",
+    intro:"Five trees, and every one of them wants a tent. ⛺",
+    locked:"Pitch every tent properly and the gate opens.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#20361f"/><rect y="460" width="800" height="140" fill="#2c4a2b"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:170,edge:"#8fc88f",inner:
+        '<text x="180" y="184" font-size="16" text-anchor="middle">One tent per tree,</text>'+
+        '<text x="180" y="208" font-size="16" text-anchor="middle">right beside it</text>'+
+        '<text x="180" y="238" font-size="16" text-anchor="middle">Tents never touch,</text>'+
+        '<text x="180" y="262" font-size="16" text-anchor="middle">not even at corners</text>'+
+        '<text x="180" y="292" font-size="16" text-anchor="middle">Numbers count tents</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the campsite">
+        <rect x="390" y="180" width="230" height="230" rx="10" fill="#16280f" stroke="#8fc88f" stroke-width="6"/>
+        ${[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>`<rect x="${402+c*44}" y="${192+r*44}" width="38" height="38" rx="4" fill="#21401c"/>`).join("")).join("")}
+        <text x="424" y="404" font-size="22">🌳</text><text x="556" y="228" font-size="22">🌳</text>
+        <text x="512" y="360" font-size="22">🌳</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a campfire"><text x="150" y="420" font-size="40">🔥</text></g>
+      ${door({frame:"#365c34",panel:"#4d7d4a",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#d8f0d8">Room 54 · Tents and Trees</text>`);
+    },
+    clue:()=>open(`<h2>Camp rules</h2>
+      <p>Every tree gets <b>exactly one tent</b>, directly above, below, left or right of it —
+         and every tent belongs to exactly one tree.</p>
+      <p>No two tents may touch, <b>not even diagonally</b>. The numbers count the tents in each row and column.</p>
+      <p class="mini">A row marked 0 can hold no tents at all — that is usually where to start.</p>
+      <div class="row"><button class="btn" data-close>Camp rules</button></div>`),
+    extra:()=>{ say("A cold campfire ring. Somebody camped here correctly once. 🔥"); close(); },
+    puzzle(){
+      S.trees=[[0,4],[2,0],[4,4],[3,2],[1,0]];
+      S.tRow=[1,1,0,2,1]; S.tCol=[2,0,1,0,2];
+      S.tents=[];
+      S.onDone=()=>solve("⛺","Every tree has its tent! 🎉","The campers waved you through the gate.");
+      open(`<h2>Pitch five tents</h2>
+        <div id="tentbox"></div>
+        <p class="msg">0 of 5 tents pitched.</p>
+        <div class="row"><button class="btn ghost" data-tentclear>Clear</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawTents();
+    }
+  },
+
+  /* ---------- 55 · Bridges ---------- */
+  {
+    name:"Bridges",
+    intro:"Eight islands, and a number painted on each one. 🌉",
+    locked:"Join every island into one country.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#123044"/><rect y="470" width="800" height="130" fill="#17435f"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:170,edge:"#7fc8e0",inner:
+        '<text x="180" y="184" font-size="16" text-anchor="middle">The number is how</text>'+
+        '<text x="180" y="208" font-size="16" text-anchor="middle">many bridges touch</text>'+
+        '<text x="180" y="232" font-size="16" text-anchor="middle">that island</text>'+
+        '<text x="180" y="262" font-size="16" text-anchor="middle">Bridges go straight,</text>'+
+        '<text x="180" y="288" font-size="16" text-anchor="middle">at most two per pair</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the islands">
+        <rect x="390" y="170" width="240" height="240" rx="10" fill="#0d2434" stroke="#7fc8e0" stroke-width="5"/>
+        ${[[0,0,3],[0,2,3],[0,4,2],[2,0,3],[2,4,3],[4,0,3],[4,2,3],[4,4,4]].map(([r,c,n])=>
+          `<circle cx="${420+c*50}" cy="${200+r*50}" r="20" fill="#e8f4fa" stroke="#4a8fa8" stroke-width="4"/>
+           <text x="${420+c*50}" y="${207+r*50}" font-size="19" text-anchor="middle" fill="#123044">${n}</text>`).join("")}
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a boat"><text x="150" y="430" font-size="40">⛵</text></g>
+      ${door({frame:"#1d5271",panel:"#2c7799",x:680,y:180,w:100,h:290})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfeaf5">Room 55 · Bridges</text>`);
+    },
+    clue:()=>open(`<h2>How the bridges work</h2>
+      <p>Each island's number says exactly how many bridge-ends touch it.
+         Bridges run <b>straight</b> between two islands, never diagonally,
+         and there may be <b>at most two</b> between the same pair.</p>
+      <p>When you are done, every island must be reachable from every other.</p>
+      <p class="mini">Tap two islands to add a bridge. Tap the same pair again for a second one, and once more to remove them.</p>
+      <div class="row"><button class="btn" data-close>Building</button></div>`),
+    extra:()=>{ say("A little boat, tied up. Rowing would be cheating anyway. ⛵"); close(); },
+    puzzle(){
+      S.isl=[{id:"A",r:0,c:0,n:3},{id:"B",r:0,c:2,n:3},{id:"C",r:0,c:4,n:2},{id:"D",r:2,c:0,n:3},
+             {id:"E",r:2,c:4,n:3},{id:"F",r:4,c:0,n:3},{id:"G",r:4,c:2,n:3},{id:"H",r:4,c:4,n:4}];
+      S.edges=[["A","B"],["B","C"],["A","D"],["D","F"],["C","E"],["E","H"],["F","G"],["G","H"]];
+      S.bw={}; S.edges.forEach(e=>S.bw[e.join("")]=0);
+      S.isel=null;
+      S.onDone=()=>solve("🏝️","Every island joined! 🎉","You walked across your own bridges to the far door.");
+      open(`<h2>Join all eight islands</h2>
+        <div id="bridgebox2"></div>
+        <p class="msg">Tap two islands to build between them.</p>
+        <div class="row"><button class="btn ghost" data-brclear>Clear</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawBridges();
+    }
+  },
+
+  /* ---------- 56 · Twelve Coins ---------- */
+  {
+    name:"Twelve Coins",
+    intro:"Twelve coins. One is wrong — but heavier or lighter? ⚖️",
+    locked:"Name the false coin and the chest opens.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2b2415"/><rect y="460" width="800" height="140" fill="#3d3420"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:170,edge:"#c9a24a",inner:
+        '<text x="180" y="184" font-size="16" text-anchor="middle">One of the twelve is</text>'+
+        '<text x="180" y="210" font-size="16" text-anchor="middle">false. It may be</text>'+
+        '<text x="180" y="238" font-size="16" text-anchor="middle">heavier OR lighter —</text>'+
+        '<text x="180" y="264" font-size="16" text-anchor="middle">you are not told which.</text>'+
+        '<text x="180" y="294" font-size="16" text-anchor="middle">THREE weighings.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="coins and scales">
+        <rect x="350" y="170" width="300" height="110" rx="10" fill="#4a4128"/>
+        ${[...Array(12)].map((_,i)=>`<circle cx="${380+(i%6)*48}" cy="${205+Math.floor(i/6)*44}" r="17" fill="#c9a24a"/>`).join("")}
+        <path d="M410 350 L590 350" stroke="#c9a24a" stroke-width="8"/>
+        <path d="M500 350 L500 300" stroke="#c9a24a" stroke-width="8"/>
+        <circle cx="420" cy="372" r="22" fill="none" stroke="#c9a24a" stroke-width="5"/>
+        <circle cx="580" cy="372" r="22" fill="none" stroke="#c9a24a" stroke-width="5"/>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a ledger"><text x="150" y="420" font-size="40">📒</text></g>
+      ${door({frame:"#5c4f2e",panel:"#7d6c40",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#ffe3a8">Room 56 · Twelve Coins</text>`);
+    },
+    clue:()=>open(`<h2>The hard version</h2>
+      <p>One of the twelve coins is false. It may be <b>heavier or lighter</b> —
+         nobody will tell you which. You get <b>three</b> weighings.</p>
+      <p class="mini">Four against four is the only first weighing that can work: it splits twelve into
+         three groups of four, and three weighings can tell apart at most three outcomes each.</p>
+      <div class="row"><button class="btn" data-close>Three weighings</button></div>`),
+    extra:()=>{ say("A ledger of every coin ever weighed here. None of it helps. 📒"); close(); },
+    puzzle(){
+      S.fake12=8; S.heavy12=true; S.pan12=Array(12).fill(0); S.w12=0; S.acc12=false;
+      S.onDone=()=>solve("🏵️","Coin 9, and it was the heavy one! 🎉","The chest opened on a heap of entirely genuine gold.");
+      open(`<h2>Find the false coin</h2>
+        <div id="coin12box"></div>
+        <p class="msg">Tap a coin to move it: left pan → right pan → off.</p>
+        <div class="row"><button class="btn" data-weigh12>⚖️ Weigh</button>
+          <button class="btn ghost" data-coin12clear>Take all off</button></div>
+        <div class="row"><button class="btn alt" data-accuse12>That coin is false!</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawCoins12();
+    }
+  },
+
+  /* ---------- 57 · Three Jugs ---------- */
+  {
+    name:"Three Jugs",
+    intro:"Eight litres in the big jug, and no tap in sight. 🫗",
+    locked:"Four litres and four litres. Nothing else will do.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#1e3038"/><rect y="450" width="800" height="150" fill="#2a4450"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:150,edge:"#7fb0c0",inner:
+        '<text x="180" y="186" font-size="17" text-anchor="middle">No tap, no drain.</text>'+
+        '<text x="180" y="216" font-size="17" text-anchor="middle">Only pouring from</text>'+
+        '<text x="180" y="246" font-size="17" text-anchor="middle">one jug to another.</text>'+
+        '<text x="180" y="278" font-size="20" text-anchor="middle">Split it 4 and 4.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="three jugs">
+        ${[[400,8],[500,5],[580,3]].map(([x,cap],i)=>`
+          <path d="M${x} ${330-cap*14} L${x} 430 Q${x} 450 ${x+20} 450 L${x+50} 450 Q${x+70} 450 ${x+70} 430 L${x+70} ${330-cap*14}Z"
+                fill="#8fd6ff" opacity="${i===0?'.55':'.2'}" stroke="#cfe8f5" stroke-width="4"/>
+          <text x="${x+35}" y="478" font-size="18" text-anchor="middle" fill="#cfe8f5">${cap} L</text>`).join("")}
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a puddle"><text x="150" y="430" font-size="40">💧</text></g>
+      ${door({frame:"#2f5565",panel:"#447a8f",x:680,y:180,w:100,h:270})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe8f5">Room 57 · Three Jugs</text>`);
+    },
+    clue:()=>open(`<h2>Scratched on the wall</h2>
+      <p>The jugs hold <b>8, 5 and 3</b> litres. The big one is full; the others are empty.
+         There is <b>no tap and no drain</b> — you may only pour from one jug into another,
+         until the first is empty or the second is full.</p>
+      <p class="mini">Finish with 4 litres in the 8 and 4 in the 5. It takes seven pours.</p>
+      <div class="row"><button class="btn" data-close>Seven pours</button></div>`),
+    extra:()=>{ say("A puddle on the floor. Evidence of an earlier, wetter attempt. 💧"); close(); },
+    puzzle(){
+      S.j3=[8,0,0]; S.j3cap=[8,5,3];
+      S.onDone=()=>solve("🫗","Four and four! 🎉","The lock measured it twice, then opened.");
+      open(`<h2>Split the eight litres in half</h2>
+        <div id="j3box"></div>
+        <div class="row" id="j3buttons"></div>
+        <p class="msg">Pour from one jug into another.</p>
+        <div class="row"><button class="btn ghost" data-j3reset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawJ3();
+    }
+  },
+
+  /* ---------- 58 · Mate in One ---------- */
+  {
+    name:"Mate in One",
+    intro:"A chessboard, mid-game, and it is White to move. ♚",
+    locked:"One move. Checkmate. Nothing less.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2a2620"/><rect y="460" width="800" height="140" fill="#39342c"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#c9b48a",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">White to play and</text>'+
+        '<text x="180" y="230" font-size="24" text-anchor="middle">mate in ONE</text>'+
+        '<text x="180" y="262" font-size="16" text-anchor="middle">no checks, no escapes</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="chessboard">
+        <rect x="390" y="180" width="240" height="240" rx="6" fill="#3a3228" stroke="#c9b48a" stroke-width="5"/>
+        ${[0,1,2,3,4,5,6,7].map(r=>[0,1,2,3,4,5,6,7].map(c=>`<rect x="${396+c*29}" y="${186+r*29}" width="29" height="29"
+          fill="${(r+c)%2?'#8a7358':'#d8c8a8'}"/>`).join("")).join("")}
+        <text x="580" y="212" font-size="22" text-anchor="middle">♚</text>
+        <text x="410" y="415" font-size="22" text-anchor="middle">♖</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a chess clock"><text x="150" y="420" font-size="40">⏱️</text></g>
+      ${door({frame:"#4a4236",panel:"#6b6250",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e8dcc0">Room 58 · Mate in One</text>`);
+    },
+    clue:()=>open(`<h2>The position</h2>
+      <p>White has a king on g1 and a rook on a1. Black has a king on g8 and pawns on f7, g7 and h7.</p>
+      <p><b>White to move and mate in one.</b></p>
+      <p class="mini">The black king's own pawns are the point: it has no square to run to along its back rank either.</p>
+      <div class="row"><button class="btn" data-close>Thinking</button></div>`),
+    extra:()=>{ say("A chess clock, ticking. No pressure. ⏱️"); close(); },
+    puzzle(){
+      S.board={a1:"♖",g1:"♔",g8:"♚",f7:"♟",g7:"♟",h7:"♟"};
+      S.csel2=null;
+      S.onDone=()=>solve("♚","Ra8 — checkmate! 🎉",
+        "The rook takes the eighth rank, and every escape square is either on that rank or blocked by Black's own pawns.");
+      open(`<h2>White to play, mate in one</h2>
+        <div id="chessbox"></div>
+        <p class="msg">Tap a white piece, then the square it moves to.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawChess();
+    }
+  },
+
+  /* ---------- 59 · Warehouse : two crates ---------- */
+  {
+    name:"Warehouse",
+    intro:"Two crates, two marks, and still no way to pull. 📦",
+    locked:"Both crates on their marks.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2f2b26"/><rect y="460" width="800" height="140" fill="#413c34"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#a89a7a",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">Two crates now.</text>'+
+        '<text x="180" y="226" font-size="17" text-anchor="middle">Push one into a corner</text>'+
+        '<text x="180" y="256" font-size="17" text-anchor="middle">and it stays there</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="warehouse floor">
+        <rect x="390" y="180" width="230" height="230" rx="10" fill="#211e19" stroke="#a89a7a" stroke-width="6"/>
+        ${[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>`<rect x="${402+c*44}" y="${192+r*44}" width="38" height="38" rx="4" fill="#4a4539"/>`).join("")).join("")}
+        <text x="421" y="220" font-size="22" text-anchor="middle">❌</text>
+        <text x="597" y="396" font-size="22" text-anchor="middle">❌</text>
+        <text x="465" y="264" font-size="22" text-anchor="middle">📦</text>
+        <text x="553" y="352" font-size="22" text-anchor="middle">📦</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a forklift"><text x="150" y="420" font-size="40">🚜</text></g>
+      ${door({frame:"#5c574c",panel:"#7d7666",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e8dcc0">Room 59 · Warehouse</text>`);
+    },
+    clue:()=>open(`<h2>Same rule, twice the trouble</h2>
+      <p>Push both crates onto the two ❌ marks. You can only <b>push</b>, and only one crate at a time —
+         you can never push two at once.</p>
+      <p class="mini">It can be done in thirteen steps. Start over costs nothing.</p>
+      <div class="row"><button class="btn" data-close>Thirteen steps</button></div>`),
+    extra:()=>{ say("A forklift with no keys. That would be far too easy. 🚜"); close(); },
+    puzzle(){
+      S.whW=[[0,4],[4,0],[2,2]]; S.whT=[[0,0],[4,4]];
+      S.whP=[2,0]; S.whC=[[1,1],[3,3]];
+      S.onDone=()=>solve("🏗️","Both crates, both marks! 🎉","The shutter rattled up and the yard was open.");
+      open(`<h2>Both crates onto the marks</h2>
+        <div class="gridp g5" id="whgrid"></div>
+        <div class="dpad">
+          <button data-wh="u" style="grid-column:2;grid-row:1" aria-label="up">⬆️</button>
+          <button data-wh="l" style="grid-column:1;grid-row:2" aria-label="left">⬅️</button>
+          <button data-wh="d" style="grid-column:2;grid-row:2" aria-label="down">⬇️</button>
+          <button data-wh="r" style="grid-column:3;grid-row:2" aria-label="right">➡️</button>
+        </div>
+        <p class="msg">0 of 2 crates in place.</p>
+        <div class="row"><button class="btn ghost" data-whreset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawWH();
+    }
+  },
+
+  /* ---------- 60 · Five Houses : the whole riddle ---------- */
+  {
+    name:"Five Houses",
+    intro:"The last door of all. Five houses, and ten clues. 🏘️",
+    locked:"Every house, every pet, every drink. Then you are out.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#161a2e"/>${stars(70,31)}
+      <rect y="470" width="800" height="130" fill="#222842"/>
+      <path d="M0 470 Q400 425 800 470 L800 600 L0 600Z" fill="#2b3255"/>
+      ${sign({go:"clue",x:50,y:120,w:250,h:150,edge:"#8fa3c8",inner:
+        '<text x="175" y="166" font-size="17" text-anchor="middle">Ten clues, five houses,</text>'+
+        '<text x="175" y="196" font-size="17" text-anchor="middle">a colour, a pet and a</text>'+
+        '<text x="175" y="226" font-size="17" text-anchor="middle">drink for each.</text>'+
+        '<text x="175" y="256" font-size="17" text-anchor="middle">Only one arrangement fits.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="five houses">
+        ${[0,1,2,3,4].map(i=>`<rect x="${350+i*66}" y="300" width="54" height="76" rx="4"
+          fill="${["#e8d44a","#4aa85a","#e8e8e8","#c44","#4a7fc4"][i]}"/>
+          <path d="M${346+i*66} 300 L${377+i*66} 262 L${408+i*66} 300Z" fill="#6b5a44"/>
+          <rect x="${368+i*66}" y="336" width="18" height="40" fill="#3a2f22"/>`).join("")}
+        <text x="500" y="410" font-size="19" text-anchor="middle" fill="#cfe0ff">five houses in a row</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="the fox"><text x="140" y="440" font-size="52">🦊</text></g>
+      ${door({frame:"#2c3a5e",panel:"#44598c",x:670,y:150,w:110,h:320})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe0ff">Room 60 · Five Houses</text>`);
+    },
+    clue:()=>open(`<h2>The ten clues</h2>
+      <p style="font-size:15px;text-align:left;line-height:1.6">
+        1. The <b>yellow</b> house is first.<br>
+        2. The <b>red</b> house keeps the <b>cat</b>.<br>
+        3. <b>Milk</b> is drunk in the <b>middle</b> house.<br>
+        4. The <b>green</b> house is next to the <b>dog</b>.<br>
+        5. The <b>blue</b> house drinks <b>juice</b>.<br>
+        6. The <b>fish</b> lives in the <b>last</b> house.<br>
+        7. The <b>white</b> house is immediately <b>right</b> of the green one.<br>
+        8. The <b>horse</b> owner drinks <b>tea</b>.<br>
+        9. The <b>bird</b> is next to the <b>cocoa</b> drinker.<br>
+        10. The <b>dog</b> lives somewhere <b>left</b> of the bird.</p>
+      <p class="mini">Clues 1, 3, 6 and 7 pin down most of the colours before you touch the pets.</p>
+      <div class="row"><button class="btn" data-close>Ten clues</button></div>`),
+    extra:()=>{ say("The fox has brought a small flag. It is very confident about this. 🦊"); close(); },
+    puzzle(){
+      S.ein=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];   // colour / pet / drink, 0 = blank
+      S.onDone=()=>solve("🏘️","Every house, exactly right! 🎉",
+        "Sixty rooms. Sixty star keys. The last door swings open and the fox trots out ahead of you.");
+      open(`<h2>Fill in all five houses</h2>
+        <div id="einbox"></div>
+        <p class="msg">Tap a square to change it.</p>
+        <div class="row"><button class="btn ghost" data-einclear>Clear</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawEin();
+    }
   }
   ];
 
@@ -3583,6 +4077,355 @@
     msg(S.sky.flat().filter(Boolean).length+" of 16 towers placed");
   }
 
+  /* ---------- shared: Latin-square helpers ---------- */
+  function lineOK(a,n){ return a.slice().sort().join("")===[...Array(n)].map((_,i)=>i+1).join(""); }
+
+  /* ---------- 51 sudoku six ---------- */
+  function drawS6(){
+    const g=$("s6grid"); if(!g) return;
+    let h="";
+    for(let r=0;r<6;r++) for(let c=0;c<6;c++){
+      const fixed=S.s6fix[r][c]!==0, v=S.s6[r][c];
+      const shade=(Math.floor(r/2)+Math.floor(c/3))%2;
+      h += fixed
+        ? '<div class="fixed">'+v+'</div>'
+        : '<button data-s6="'+r+'-'+c+'" class="'+(S.s6sel&&S.s6sel[0]===r&&S.s6sel[1]===c?"picked":"")+
+          '" style="background:'+(shade?"#efeaff":"#fff")+'">'+(v||"")+'</button>';
+    }
+    g.innerHTML=h;
+    $("s6pad").innerHTML=[1,2,3,4,5,6,0].map(n=>
+      '<button class="big" data-s6d="'+n+'">'+(n||"✕")+'</button>').join("");
+  }
+  function s6Tap(b){ const [r,c]=b.dataset.s6.split("-").map(Number); S.s6sel=[r,c]; drawS6(); msg("Now tap a number."); }
+  function s6Dig(b){
+    if(!S.s6sel) return msg("Tap a square first.");
+    const [r,c]=S.s6sel; S.s6[r][c]=+b.dataset.s6d; drawS6();
+    const full=S.s6.every(row=>row.every(v=>v));
+    if(full && S.s6.every(row=>lineOK(row,6))
+       && [0,1,2,3,4,5].every(c2=>lineOK([0,1,2,3,4,5].map(r2=>S.s6[r2][c2]),6))
+       && [0,2,4].every(br=>[0,3].every(bc=>lineOK([S.s6[br][bc],S.s6[br][bc+1],S.s6[br][bc+2],
+            S.s6[br+1][bc],S.s6[br+1][bc+1],S.s6[br+1][bc+2]],6))))
+      return void setTimeout(S.onDone,350);
+    msg(S.s6.flat().filter(Boolean).length+" of 36 filled");
+  }
+
+  /* ---------- 52 futoshiki ---------- */
+  function futoSign(r1,c1,r2,c2){
+    const f=S.fuLT.find(([a,b,c,d])=>(a===r1&&b===c1&&c===r2&&d===c2)||(a===r2&&b===c2&&c===r1&&d===c1));
+    if(!f) return "";
+    const pointsRight = f[0]===r2 && f[1]===c2;     // the bigger cell is cell1's partner
+    return (r1===r2) ? (pointsRight?"◂":"▸") : (pointsRight?"▴":"▾");
+  }
+  function drawFuto(){
+    const box=$("fubox"); if(!box) return;
+    let h='<div class="futo">';
+    for(let r=0;r<5;r++){
+      for(let c=0;c<5;c++){
+        const giv=S.fuGiv.some(([gr,gc])=>gr===r&&gc===c);
+        h += giv ? '<span class="fcell fixed">'+S.fu[r][c]+'</span>'
+                 : '<button class="fcell'+(S.fusel&&S.fusel[0]===r&&S.fusel[1]===c?" picked":"")+
+                   '" data-fu="'+r+'-'+c+'">'+(S.fu[r][c]||"")+'</button>';
+        if(c<4) h+='<span class="fsign">'+futoSign(r,c,r,c+1)+'</span>';
+      }
+      if(r<4) for(let c=0;c<5;c++){
+        h+='<span class="fsign v">'+futoSign(r,c,r+1,c)+'</span>';
+        if(c<4) h+='<span class="fsign"></span>';
+      }
+    }
+    box.innerHTML=h+'</div>';
+    $("fupad").innerHTML=[1,2,3,4,5,0].map(n=>'<button class="big" data-fud="'+n+'">'+(n||"✕")+'</button>').join("");
+  }
+  function fuTap(b){ const [r,c]=b.dataset.fu.split("-").map(Number); S.fusel=[r,c]; drawFuto(); msg("Now tap a number."); }
+  function fuDig(b){
+    if(!S.fusel) return msg("Tap a square first.");
+    const [r,c]=S.fusel; S.fu[r][c]=+b.dataset.fud; drawFuto();
+    const full=S.fu.every(row=>row.every(v=>v));
+    if(full && S.fu.every(row=>lineOK(row,5))
+       && [0,1,2,3,4].every(c2=>lineOK([0,1,2,3,4].map(r2=>S.fu[r2][c2]),5))
+       && S.fuLT.every(([r1,c1,r2,c2])=>S.fu[r1][c1]<S.fu[r2][c2]))
+      return void setTimeout(S.onDone,350);
+    msg(full ? "Full, but something breaks a rule." : S.fu.flat().filter(Boolean).length+" of 25 filled");
+  }
+
+  /* ---------- 53 hitori ---------- */
+  function hitoriDone(){
+    for(let r=0;r<5;r++) for(let c=0;c<5;c++) if(S.hi[r][c]){
+      if(r<4&&S.hi[r+1][c]) return false;
+      if(c<4&&S.hi[r][c+1]) return false;
+    }
+    for(let i=0;i<5;i++){
+      const rv=[],cv=[];
+      for(let k=0;k<5;k++){ if(!S.hi[i][k]) rv.push(S.hiGrid[i][k]); if(!S.hi[k][i]) cv.push(S.hiGrid[k][i]); }
+      if(new Set(rv).size!==rv.length||new Set(cv).size!==cv.length) return false;
+    }
+    const cells=[]; for(let r=0;r<5;r++) for(let c=0;c<5;c++) if(!S.hi[r][c]) cells.push([r,c]);
+    if(!cells.length) return false;
+    const seen=new Set([cells[0].join(",")]), q=[cells[0]];
+    while(q.length){ const [r,c]=q.pop();
+      for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const a=r+dr,b2=c+dc,k=a+","+b2;
+        if(a>=0&&a<5&&b2>=0&&b2<5&&!S.hi[a][b2]&&!seen.has(k)){ seen.add(k); q.push([a,b2]); } } }
+    return seen.size===cells.length;
+  }
+  function drawHitori(){
+    const g=$("higrid"); if(!g) return;
+    let h="";
+    for(let r=0;r<5;r++) for(let c=0;c<5;c++)
+      h+='<button class="'+(S.hi[r][c]?"shaded":"")+'" data-hi="'+r+'-'+c+'">'+S.hiGrid[r][c]+'</button>';
+    g.innerHTML=h;
+  }
+  function hiTap(b){
+    const [r,c]=b.dataset.hi.split("-").map(Number);
+    S.hi[r][c]^=1; drawHitori();
+    if(hitoriDone()) return void setTimeout(S.onDone,350);
+    msg(S.hi.flat().filter(Boolean).length+" shaded");
+  }
+
+  /* ---------- 54 tents ---------- */
+  function drawTents(){
+    const box=$("tentbox"); if(!box) return;
+    let h='<div class="tentgrid"><span></span>'+S.tCol.map(v=>'<span class="sc">'+v+'</span>').join("");
+    for(let r=0;r<5;r++){
+      h+='<span class="sc">'+S.tRow[r]+'</span>';
+      for(let c=0;c<5;c++){
+        const tree=S.trees.some(t=>t[0]===r&&t[1]===c);
+        const tent=S.tents.some(t=>t[0]===r&&t[1]===c);
+        h+= tree ? '<span class="tcell tree">🌳</span>'
+                 : '<button class="tcell'+(tent?" tent":"")+'" data-te="'+r+'-'+c+'">'+(tent?"⛺":"")+'</button>';
+      }
+    }
+    box.innerHTML=h+'</div>';
+  }
+  function tentsDone(){
+    if(S.tents.length!==S.trees.length) return false;
+    for(let r=0;r<5;r++) if(S.tents.filter(t=>t[0]===r).length!==S.tRow[r]) return false;
+    for(let c=0;c<5;c++) if(S.tents.filter(t=>t[1]===c).length!==S.tCol[c]) return false;
+    for(let i=0;i<S.tents.length;i++) for(let j=i+1;j<S.tents.length;j++)
+      if(Math.abs(S.tents[i][0]-S.tents[j][0])<=1&&Math.abs(S.tents[i][1]-S.tents[j][1])<=1) return false;
+    const used=new Set();
+    const match=i=>{
+      if(i===S.trees.length) return true;
+      for(let k=0;k<S.tents.length;k++){
+        if(used.has(k)) continue;
+        const d=Math.abs(S.trees[i][0]-S.tents[k][0])+Math.abs(S.trees[i][1]-S.tents[k][1]);
+        if(d!==1) continue;
+        used.add(k); if(match(i+1)) return true; used.delete(k);
+      }
+      return false;
+    };
+    return match(0);
+  }
+  function tentTap(b){
+    const [r,c]=b.dataset.te.split("-").map(Number);
+    const i=S.tents.findIndex(t=>t[0]===r&&t[1]===c);
+    if(i>=0) S.tents.splice(i,1);
+    else{
+      if(S.tents.length>=S.trees.length) return msg("That is already five tents.");
+      S.tents.push([r,c]);
+    }
+    drawTents();
+    if(tentsDone()) return void setTimeout(S.onDone,350);
+    msg(S.tents.length+" of "+S.trees.length+" tents pitched.");
+  }
+
+  /* ---------- 55 bridges ---------- */
+  function drawBridges(){
+    const box=$("bridgebox2"); if(!box) return;
+    const deg={}; S.isl.forEach(i=>deg[i.id]=0);
+    S.edges.forEach(([a,b])=>{ const w=S.bw[a+b]; deg[a]+=w; deg[b]+=w; });
+    let h='<svg viewBox="0 0 260 260" class="brsvg">';
+    S.edges.forEach(([a,b])=>{
+      const A=S.isl.find(i=>i.id===a), B=S.isl.find(i=>i.id===b), w=S.bw[a+b];
+      if(!w) return;
+      const x1=30+A.c*50, y1=30+A.r*50, x2=30+B.c*50, y2=30+B.r*50;
+      const off=w===2?4:0;
+      for(let k=0;k<w;k++){
+        const d=(k===0?-off:off);
+        const dx=(y1===y2)?0:d, dy=(y1===y2)?d:0;
+        h+=`<line x1="${x1+dx}" y1="${y1+dy}" x2="${x2+dx}" y2="${y2+dy}" stroke="#4a8fa8" stroke-width="4"/>`;
+      }
+    });
+    S.isl.forEach(i=>{
+      const x=30+i.c*50, y=30+i.r*50, ok=deg[i.id]===i.n;
+      h+=`<circle cx="${x}" cy="${y}" r="18" fill="${ok?"#d7f7e9":"#fff"}"
+            stroke="${S.isel===i.id?"#ff7eb6":"#4a8fa8"}" stroke-width="${S.isel===i.id?5:3}"/>
+          <text x="${x}" y="${y+6}" font-size="17" text-anchor="middle" fill="#123044"
+            font-weight="800">${i.n}</text>`;
+    });
+    box.innerHTML=h+'</svg><div class="brtaps">'+S.isl.map(i=>
+      '<button class="brbtn'+(S.isel===i.id?" picked":"")+(deg[i.id]===i.n?" ok":"")+
+      '" data-br="'+i.id+'">'+i.id+'<small>'+deg[i.id]+'/'+i.n+'</small></button>').join("")+'</div>';
+  }
+  function bridgesDone(){
+    const deg={}; S.isl.forEach(i=>deg[i.id]=0);
+    S.edges.forEach(([a,b])=>{ const w=S.bw[a+b]; deg[a]+=w; deg[b]+=w; });
+    if(!S.isl.every(i=>deg[i.id]===i.n)) return false;
+    const adj={}; S.isl.forEach(i=>adj[i.id]=[]);
+    S.edges.forEach(([a,b])=>{ if(S.bw[a+b]>0){ adj[a].push(b); adj[b].push(a); } });
+    const seen=new Set([S.isl[0].id]), q=[S.isl[0].id];
+    while(q.length){ const n=q.pop(); adj[n].forEach(m=>{ if(!seen.has(m)){ seen.add(m); q.push(m); } }); }
+    return seen.size===S.isl.length;
+  }
+  function brTap(b){
+    const id=b.dataset.br;
+    if(S.isel===null){ S.isel=id; drawBridges(); return msg("Now tap the island to join it to."); }
+    if(S.isel===id){ S.isel=null; drawBridges(); return msg(""); }
+    const key=S.edges.find(([a,b2])=>(a===S.isel&&b2===id)||(a===id&&b2===S.isel));
+    S.isel=null;
+    if(!key){ drawBridges(); return msg("No straight line runs between those two."); }
+    const k=key.join("");
+    S.bw[k]=(S.bw[k]+1)%3;
+    drawBridges();
+    if(bridgesDone()) return void setTimeout(S.onDone,350);
+    msg("");
+  }
+
+  /* ---------- 56 twelve coins ---------- */
+  function drawCoins12(){
+    const box=$("coin12box"); if(!box) return;
+    box.innerHTML='<div class="coins c12">'+S.pan12.map((v,i)=>
+      '<button class="coin p'+v+'" data-c12="'+i+'">🪙<small>'+(i+1)+'</small></button>').join("")+'</div>'+
+      '<p class="mini">left pan: '+S.pan12.filter(v=>v===1).length+
+      ' · right pan: '+S.pan12.filter(v=>v===2).length+
+      ' · weighings used: '+S.w12+' of 3</p>'+
+      (S.acc12?'<p class="mini">Now tap the coin you believe is false.</p>':'');
+  }
+  function c12Tap(b){
+    const i=+b.dataset.c12;
+    if(S.acc12){
+      if(i===S.fake12) return void setTimeout(S.onDone,350);
+      wrong(); S.acc12=false; S.pan12=Array(12).fill(0); S.w12=0; drawCoins12();
+      return msg("That coin is genuine. The scales are reset — start again.");
+    }
+    S.pan12[i]=(S.pan12[i]+1)%3; drawCoins12(); msg("");
+  }
+  function weigh12(){
+    if(S.acc12) return msg("You are naming the false coin — tap one.");
+    if(S.w12>=3) return msg("No weighings left. Name the false coin.");
+    const L=S.pan12.filter(v=>v===1).length, R=S.pan12.filter(v=>v===2).length;
+    if(!L||!R) return msg("Put coins on both pans first.");
+    const w=side=>S.pan12.reduce((a,v,i)=>
+      a+(v===side?(i===S.fake12?(S.heavy12?1.1:0.9):1):0),0);
+    const l=w(1), r=w(2);
+    S.w12++;
+    const res = Math.abs(l-r)<1e-9 ? "They balance exactly."
+              : l>r ? "The LEFT pan goes DOWN — it is heavier."
+                    : "The RIGHT pan goes DOWN — it is heavier.";
+    drawCoins12();
+    msg(res+"  ("+S.w12+" of 3 used)");
+  }
+
+  /* ---------- 57 three jugs ---------- */
+  function drawJ3(){
+    const box=$("j3box"); if(!box) return;
+    const jug=(v,cap,label)=>{
+      const h=140, fill=h*v/cap;
+      return `<div class="jug"><svg viewBox="0 0 70 ${h}" width="60" height="${h}">
+        <rect x="3" y="0" width="64" height="${h}" rx="10" fill="#e8f4fb"/>
+        <rect x="3" y="${h-fill}" width="64" height="${fill}" rx="8" fill="#5ec8ff"/>
+        ${[...Array(cap-1)].map((_,i)=>`<line x1="3" y1="${h-(i+1)*h/cap}" x2="67" y2="${h-(i+1)*h/cap}"
+          stroke="#b9d8e8" stroke-width="2"/>`).join("")}
+        <rect x="3" y="0" width="64" height="${h}" rx="10" fill="none" stroke="#7fa8bd" stroke-width="4"/>
+        </svg><b>${v} / ${cap}</b><span class="mini">${label}</span></div>`;
+    };
+    box.innerHTML='<div class="jugs">'+jug(S.j3[0],8,"eight")+jug(S.j3[1],5,"five")+jug(S.j3[2],3,"three")+'</div>';
+    const names=["8","5","3"];
+    $("j3buttons").innerHTML=[[0,1],[0,2],[1,0],[1,2],[2,0],[2,1]].map(([a,b])=>
+      '<button class="btn ghost" data-j3="'+a+b+'">'+names[a]+' → '+names[b]+'</button>').join("");
+  }
+  function j3Tap(b){
+    const a=+b.dataset.j3[0], t=+b.dataset.j3[1];
+    const amt=Math.min(S.j3[a], S.j3cap[t]-S.j3[t]);
+    if(!amt) return msg("Nothing would move.");
+    S.j3[a]-=amt; S.j3[t]+=amt; drawJ3();
+    if(S.j3[0]===4 && S.j3[1]===4) return void setTimeout(S.onDone,400);
+    msg(S.j3.join(" · ")+" litres");
+  }
+
+  /* ---------- 58 mate in one ---------- */
+  const FILES=["a","b","c","d","e","f","g","h"];
+  function drawChess(){
+    const box=$("chessbox"); if(!box) return;
+    let h='<div class="chess">';
+    for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+      const sq=FILES[c]+(8-r), piece=S.board[sq]||"";
+      const dark=(r+c)%2===1;
+      h+='<button class="sq'+(dark?" dark":"")+(S.csel2===sq?" picked":"")+
+         '" data-chess="'+sq+'">'+piece+'</button>';
+    }
+    box.innerHTML=h+'</div><p class="mini">White: rook a1, king g1 · Black: king g8, pawns f7 g7 h7</p>';
+  }
+  function chessTap(b){
+    const sq=b.dataset.chess;
+    if(!S.csel2){
+      if(!"♖♔".includes(S.board[sq]||"")) return msg("Tap one of White's pieces.");
+      S.csel2=sq; drawChess(); return msg("Now tap where it goes.");
+    }
+    const from=S.csel2; S.csel2=null;
+    if(from==="a1" && sq==="a8"){
+      S.board.a8=S.board.a1; delete S.board.a1; drawChess();
+      return void setTimeout(S.onDone,400);
+    }
+    drawChess();
+    wrong();
+    msg(from==="g1" ? "The king cannot deliver mate here." : "Not mate — Black still has a move.");
+  }
+
+  /* ---------- 59 warehouse ---------- */
+  function drawWH(){
+    const g=$("whgrid"); if(!g) return;
+    let h="";
+    for(let r=0;r<5;r++) for(let c=0;c<5;c++){
+      const wall=S.whW.some(w=>w[0]===r&&w[1]===c);
+      const p=S.whP[0]===r&&S.whP[1]===c;
+      const crate=S.whC.some(x=>x[0]===r&&x[1]===c);
+      const t=S.whT.some(x=>x[0]===r&&x[1]===c);
+      h+='<div class="'+(wall?"wall":t?"target":"")+'">'+(p?"🧒":crate?"📦":t?"❌":"")+'</div>';
+    }
+    g.innerHTML=h;
+  }
+  function whTap(b){
+    const d=b.dataset.wh;
+    const dr=d==="u"?-1:d==="d"?1:0, dc=d==="l"?-1:d==="r"?1:0;
+    const nr=S.whP[0]+dr, nc=S.whP[1]+dc;
+    const wall=(r,c)=> r<0||r>4||c<0||c>4||S.whW.some(w=>w[0]===r&&w[1]===c);
+    if(wall(nr,nc)) return msg("A wall.");
+    const ci=S.whC.findIndex(x=>x[0]===nr&&x[1]===nc);
+    if(ci>=0){
+      const cr=nr+dr, cc=nc+dc;
+      if(wall(cr,cc)||S.whC.some(x=>x[0]===cr&&x[1]===cc)) return msg("That crate will not move.");
+      S.whC[ci]=[cr,cc];
+    }
+    S.whP=[nr,nc]; drawWH();
+    const on=S.whT.filter(t=>S.whC.some(x=>x[0]===t[0]&&x[1]===t[1])).length;
+    if(on===2) return void setTimeout(S.onDone,350);
+    msg(on+" of 2 crates in place.");
+  }
+
+  /* ---------- 60 five houses ---------- */
+  const ECOL=["·","🟥","🟩","🟦","⬜","🟨"], EPET=["·","🐈","🐕","🐦","🐟","🐴"],
+        EDRK=["·","🍵","🥛","🧃","💧","☕"];
+  const EROW=[ECOL,EPET,EDRK], ELABEL=["colour","pet","drink"];
+  function drawEin(){
+    const box=$("einbox"); if(!box) return;
+    let h='<div class="einstein"><span class="zl"></span>'+
+      [1,2,3,4,5].map(n=>'<span class="zh">'+n+'</span>').join("");
+    for(let k=0;k<3;k++){
+      h+='<span class="zl">'+ELABEL[k]+'</span>';
+      for(let i=0;i<5;i++) h+='<button data-ein="'+k+'-'+i+'">'+EROW[k][S.ein[k][i]]+'</button>';
+    }
+    box.innerHTML=h+'</div>';
+  }
+  function einTap(b){
+    const [k,i]=b.dataset.ein.split("-").map(Number);
+    S.ein[k][i]=(S.ein[k][i]+1)%6; drawEin();
+    // solution: yellow green white red blue / dog horse bird cat fish / water tea milk cocoa juice
+    const want=[[5,2,4,1,3],[2,5,3,1,4],[4,1,2,5,3]];
+    if(want.every((row,k2)=>row.every((v,i2)=>S.ein[k2][i2]===v)))
+      return void setTimeout(S.onDone,400);
+    msg("");
+  }
+
   /* ---------- rendering & flow ---------- */
   function render(){
     const R=ROOMS[S.room];
@@ -3623,7 +4466,7 @@
   function goRoom(n){
     S.room=n; S.want=[]; S.got=[]; S.picked=[]; S.code=null; S.busy=false;
     S.showGot=false; S.codeLen=1; S.entry=""; S.held=null; S.sel=null; S.asked=null; S.accusing=false;
-    S.tsel=null; S.psel=null; S.lsel=null;
+    S.tsel=null; S.psel=null; S.lsel=null; S.s6sel=null; S.fusel=null; S.isel=null; S.csel2=null; S.acc12=false;
     clearTimeout(S.resetTimer);
     close(); render(); say(ROOMS[n].intro);
     if(ROOMS[n].banner)
@@ -3640,7 +4483,7 @@
     const canResume = S.furthest>0;
     open('<h2>⭐ Star Key Escape</h2>'+
       '<p>'+ROOMS.length+' rooms, '+ROOMS.length+' star keys.<br>1–10 gentle · 11–20 bigger kids · '+
-      '21–30 brain-benders · 31–40 grandmaster · 41–50 legend.</p>'+
+      '21–30 brain-benders · 31–40 grandmaster · 41–50 legend · 51–60 mythic.</p>'+
       '<div class="map">'+ROOMS.map((r,i)=>'<b'+(i<=S.furthest?' class="done"':'')+'>'+(i+1)+'</b>').join("")+'</div>'+
       '<div class="row">'+
         (canResume?'<button class="btn" data-resume>Continue — Room '+(S.furthest+1)+'</button>':'')+
@@ -3675,6 +4518,15 @@
     if(b.hasAttribute("data-pathreset")){ S.path=[[0,0]]; drawPath(); return msg("1 of 16 tiles."); }
     if(b.hasAttribute("data-weigh"))   return weighTap();
     if(b.hasAttribute("data-coinclear")){ S.pan=[0,0,0,0,0,0,0,0]; drawCoins(); return msg(""); }
+    if(b.hasAttribute("data-hiclear")){ S.hi=[0,1,2,3,4].map(()=>[0,0,0,0,0]); drawHitori(); return msg(""); }
+    if(b.hasAttribute("data-tentclear")){ S.tents=[]; drawTents(); return msg("0 of 5 tents pitched."); }
+    if(b.hasAttribute("data-brclear")){ S.edges.forEach(e=>S.bw[e.join("")]=0); S.isel=null; drawBridges(); return msg(""); }
+    if(b.hasAttribute("data-weigh12"))  return weigh12();
+    if(b.hasAttribute("data-coin12clear")){ S.pan12=Array(12).fill(0); drawCoins12(); return msg(""); }
+    if(b.hasAttribute("data-accuse12")){ S.acc12=true; drawCoins12(); return msg("Tap the coin you think is false."); }
+    if(b.hasAttribute("data-j3reset")){ S.j3=[8,0,0]; drawJ3(); return msg(""); }
+    if(b.hasAttribute("data-whreset")){ S.whP=[2,0]; S.whC=[[1,1],[3,3]]; drawWH(); return msg("0 of 2 crates in place."); }
+    if(b.hasAttribute("data-einclear")){ S.ein=[[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]; drawEin(); return msg(""); }
     if(b.hasAttribute("data-carreset")){ S.cars=[{id:"R",r:2,c:0,len:2,dir:"h",col:"#e04a4a"},
         {id:"A",r:0,c:3,len:2,dir:"v",col:"#4a8fe0"},{id:"B",r:2,c:3,len:2,dir:"v",col:"#3ddc97"},
         {id:"C",r:4,c:2,len:2,dir:"h",col:"#ffd93d"}]; S.csel="R"; drawCars(); return msg(""); }
@@ -3722,6 +4574,18 @@
     if(b.dataset.peg2 !== undefined) return pegTap2(b);
     if(b.dataset.kk   !== undefined) return kkTap(b);
     if(b.dataset.sky  !== undefined) return skyTap(b);
+    if(b.dataset.s6   !== undefined) return s6Tap(b);
+    if(b.dataset.s6d  !== undefined) return s6Dig(b);
+    if(b.dataset.fu   !== undefined) return fuTap(b);
+    if(b.dataset.fud  !== undefined) return fuDig(b);
+    if(b.dataset.hi   !== undefined) return hiTap(b);
+    if(b.dataset.te   !== undefined) return tentTap(b);
+    if(b.dataset.br   !== undefined) return brTap(b);
+    if(b.dataset.c12  !== undefined) return c12Tap(b);
+    if(b.dataset.j3   !== undefined) return j3Tap(b);
+    if(b.dataset.chess!== undefined) return chessTap(b);
+    if(b.dataset.wh   !== undefined) return whTap(b);
+    if(b.dataset.ein  !== undefined) return einTap(b);
   });
   scrim.addEventListener("click", e=>{
     if(e.target!==scrim) return;
