@@ -1,7 +1,7 @@
 # ⭐ Star Key Escape
 
 A **room escape game** that starts out for small kids and ends up somewhere their
-parents will need a pencil. Forty rooms, forty star keys, and no way to lose — a
+parents will need a pencil. Fifty rooms, fifty star keys, and no way to lose — a
 wrong answer just wiggles and lets you try again.
 
 **▶ Play: https://ctbot000.github.io/room-escape-game-for-kids/**
@@ -12,6 +12,7 @@ wrong answer just wiggles and lets you try again.
 | Big Adventure | 11–20 | ages 8–11 |
 | Master Escaper | 21–30 | ages 10+ |
 | Grandmaster | 31–40 | teens and grown-ups |
+| Legend | 41–50 | the classics, at full size |
 
 ## Part 1 — Little Explorer
 
@@ -72,6 +73,21 @@ wrong answer just wiggles and lets you try again.
 | 38 | One Line | Cross all sixteen tiles, once each, green to red | Hamiltonian path |
 | 39 | Fake Coin | Find the light coin among eight in two weighings | information theory |
 | 40 | The Grand Lock | Three locks: a word, a number and a pattern | everything at once |
+
+## Part 5 — Legend
+
+| # | Room | Puzzle | Skill |
+|---|------|--------|-------|
+| 41 | Zebra Room | Five clues, three houses, colours and pets | logic grid |
+| 42 | Cryptarithm Vault | TWO + TWO = FOUR, in digits | algebraic search |
+| 43 | Traffic Jam | Rush Hour — slide the cars, free the red one | move planning |
+| 44 | Knight's Tour | Visit all 25 squares in L-shaped hops | graph traversal |
+| 45 | Nim Table | 15 matches, take 1–3, against a perfect guard | game theory |
+| 46 | Colour Sort | Pour marbles until every tube is one colour | state search |
+| 47 | Lights Out | A press flips a plus-shape; light all nine | linear algebra |
+| 48 | Peg Solitaire | 15-hole triangle, leave exactly one peg | search with pruning |
+| 49 | Cage Grid | KenKen — Latin square plus arithmetic cages | constraint solving |
+| 50 | Skyline | Skyscrapers — build to the visibility clues | deduction |
 
 Every room has the same shape, so a child learns it once: a **clue** to look at,
 a **puzzle** to solve, and a **door** that opens when the puzzle is done. There

@@ -171,6 +171,42 @@
   .coin.p1{background:#cdefff; box-shadow:0 3px 0 #7cc4e8}
   .coin.p2{background:#ffe6c7; box-shadow:0 3px 0 #e8b878}
 
+  /* legend-tier puzzle bits */
+  .gridp.g5{grid-template-columns:repeat(5,46px)}
+  .gridp.g5 button,.gridp.g5 div{width:46px; height:46px; font-size:18px}
+  .gridp button.carcell{border-radius:8px}
+  .zebra{display:inline-grid; grid-template-columns:64px repeat(3,54px); gap:5px; margin:10px auto}
+  .zebra .zl{font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:flex-end; padding-right:4px}
+  .zebra .zh{font-size:14px; font-weight:800; display:flex; align-items:center; justify-content:center}
+  .zebra button{height:50px; border-radius:10px; background:#fff; border:2px solid #cdc2f0; font-size:24px}
+  .sum{font-family:ui-monospace,Menlo,monospace; margin:10px auto; display:inline-block; text-align:right}
+  .sum div{display:flex; gap:4px; justify-content:flex-end; align-items:center}
+  .sum i{width:32px; height:38px; border-radius:6px; background:#efe9ff; font-style:normal;
+    font-size:22px; font-weight:800; display:flex; align-items:center; justify-content:center}
+  .sum b{font-size:20px; margin-right:4px}
+  .sum hr{border:none; border-top:3px solid #3a2f5e; margin:5px 0}
+  .tubes{display:flex; gap:10px; justify-content:center; margin:12px 0}
+  .tube{background:#e8f4fb; border:3px solid #9fc4d6; border-radius:8px 8px 18px 18px; padding:5px 4px;
+    display:flex; flex-direction:column; gap:4px}
+  .tube i{width:26px; height:26px; border-radius:50%; display:block; background:#cfe0ea}
+  .tube i.empty{background:transparent; border:2px dashed #cfe0ea}
+  .tube.picked{outline:4px solid var(--pink)}
+  .sticks{display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin:10px auto; max-width:250px}
+  .sticks i{display:block; width:7px; height:34px; border-radius:3px;
+    background:linear-gradient(#c44 0 7px,#e8d5a8 7px 100%)}
+  .tri{display:flex; flex-direction:column; align-items:center; gap:6px; margin:12px 0}
+  .trirow{display:flex; gap:6px}
+  .hole{width:34px; height:34px; border-radius:50%; background:#e8e0d0; border:2px solid #c9b48a}
+  .hole.peg{background:#e8a33c; border-color:#b5762f}
+  .hole.picked{outline:3px solid var(--pink)}
+  .hole.can{border-color:#3ddc97; border-width:3px}
+  .gridp button small.cage{position:absolute; top:2px; left:4px; font-size:10px; font-weight:800; opacity:.75}
+  .gridp button{position:relative}
+  .sky{display:inline-grid; grid-template-columns:repeat(6,40px); gap:4px; margin:10px auto}
+  .sky .sc{font-size:14px; font-weight:800; color:#5a4f86; display:flex; align-items:center; justify-content:center}
+  .sky button{width:40px; height:40px; border-radius:8px; background:#fff; border:2px solid #cdc2f0;
+    font-size:19px; font-weight:800; color:#3a2f5e}
+
   @media (max-width:520px){
     .title{font-size:17px} .say{font-size:15px} .stage{max-height:48vh} .big{font-size:32px; min-width:60px}
     .nono{--nc:32px; grid-template-columns:34px repeat(5,var(--nc)); gap:3px}
@@ -178,6 +214,13 @@
     .gridp.g4{grid-template-columns:repeat(4,50px)}
     .gridp.g3{grid-template-columns:repeat(3,50px)}
     .gridp button,.gridp div{width:50px; height:50px; font-size:21px}
+    .gridp.g5{grid-template-columns:repeat(5,40px)}
+    .gridp.g5 button,.gridp.g5 div{width:40px; height:40px; font-size:16px}
+    .zebra{grid-template-columns:54px repeat(3,46px)}
+    .zebra button{height:44px; font-size:20px}
+    .sky{grid-template-columns:repeat(6,34px)}
+    .sky button{width:34px; height:34px; font-size:17px}
+    .tubes{gap:7px} .tube i{width:22px; height:22px}
     .coins{max-width:240px}
   }
 </style>
@@ -2066,6 +2109,441 @@
       S.grandDone=()=>solve("🏰","All three locks — the great door opens! 🎉","Forty rooms. Forty star keys. You are out.");
       grandStage();
     }
+  },
+
+  /* ---------- 41 · Zebra Room : who lives where ---------- */
+  {
+    name:"Zebra Room",
+    banner:"Part 5 — Legend. Nobody would blame you for stopping here. 🧠",
+    intro:"Three little houses in a row, and a very cryptic note. 🏘️",
+    locked:"Work out every house and the door will agree to open.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#22303a"/><rect y="450" width="800" height="150" fill="#2f4250"/>
+      ${sign({go:"clue",x:50,y:120,w:250,h:180,edge:"#8fb0c8",inner:
+        '<text x="175" y="164" font-size="17" text-anchor="middle">1. green is at an end</text>'+
+        '<text x="175" y="192" font-size="17" text-anchor="middle">2. the cat is in the middle</text>'+
+        '<text x="175" y="220" font-size="17" text-anchor="middle">3. red is just left of blue</text>'+
+        '<text x="175" y="248" font-size="17" text-anchor="middle">4. blue is not the middle</text>'+
+        '<text x="175" y="276" font-size="17" text-anchor="middle">5. the bird avoids green</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="three houses">
+        ${[0,1,2].map(i=>`<rect x="${350+i*90}" y="280" width="76" height="90" rx="6" fill="#6b7a88"/>
+          <path d="M${348+i*90} 280 L${388+i*90} 236 L${428+i*90} 280Z" fill="#8a97a6"/>
+          <rect x="${374+i*90}" y="320" width="26" height="50" fill="#3a4652"/>`).join("")}
+        <text x="480" y="410" font-size="19" text-anchor="middle" fill="#cfe0ff">three houses</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a zebra, obviously"><text x="140" y="420" font-size="44">🦓</text></g>
+      ${door({frame:"#3a4652",panel:"#55677a",x:680,y:180,w:100,h:270})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe0ff">Room 41 · Zebra Room</text>`);
+    },
+    clue:()=>open(`<h2>The note</h2>
+      <p style="font-size:17px;text-align:left">
+        1. The <b>green</b> house is at one end.<br>
+        2. The <b>cat</b> lives in the middle house.<br>
+        3. The <b>red</b> house is immediately left of the <b>blue</b> one.<br>
+        4. The <b>blue</b> house is not in the middle.<br>
+        5. The <b>bird</b> does not live in the green house.</p>
+      <p class="mini">Colours: red, blue, green. Pets: cat, dog, bird. One of each.</p>
+      <div class="row"><button class="btn" data-close>On it</button></div>`),
+    extra:()=>{ say("A zebra. In a room. Nobody explains it. 🦓"); close(); },
+    puzzle(){
+      S.zc=[0,0,0]; S.zp=[0,0,0];       // 0 = blank, then cycles
+      S.onDone=()=>solve("🦓","Green-dog, red-cat, blue-bird! 🎉",
+        "Clue 4 forces red-blue into houses 2 and 3, so green takes house 1 — and the rest follows.");
+      open(`<h2>Fill in all three houses</h2>
+        <div id="zebrabox"></div>
+        <p class="msg">Tap a square to change it.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawZebra();
+    }
+  },
+
+  /* ---------- 42 · Cryptarithm Vault : TWO + TWO = FOUR ---------- */
+  {
+    name:"Cryptarithm Vault",
+    intro:"A sum written entirely in letters. 🔡",
+    locked:"Every letter needs its digit before this opens.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#231a2e"/><rect y="460" width="800" height="140" fill="#33263f"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#a98fd0",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">Each letter is one</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">digit, and no two</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">letters share a digit.</text>'+
+        '<text x="180" y="280" font-size="17" text-anchor="middle">No number starts with 0.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the lettered sum">
+        <rect x="370" y="190" width="260" height="210" rx="12" fill="#fffbee" stroke="#a98fd0" stroke-width="6"/>
+        <text x="590" y="250" font-size="34" text-anchor="end" fill="#33263f">T W O</text>
+        <text x="590" y="296" font-size="34" text-anchor="end" fill="#33263f">+ T W O</text>
+        <line x1="400" y1="316" x2="600" y2="316" stroke="#33263f" stroke-width="4"/>
+        <text x="590" y="362" font-size="34" text-anchor="end" fill="#33263f">F O U R</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="an abacus"><text x="150" y="420" font-size="40">🧮</text></g>
+      ${door({frame:"#4a3a5e",panel:"#6b5685",x:670,y:180,w:110,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e6d9ff">Room 42 · Cryptarithm Vault</text>`);
+    },
+    clue:()=>open(`<h2>The rules of the sum</h2>
+      <p>Each <b>letter</b> stands for one <b>digit</b>. The same letter is always the same digit,
+         and no two letters share one. Neither number may start with 0.</p>
+      <p class="mini">FOUR has four digits and TWO has three, so F can only be 1. There is more than one valid answer.</p>
+      <div class="row"><button class="btn" data-close>Let me work</button></div>`),
+    extra:()=>{ say("An abacus, worn smooth. Somebody has been at this a while. 🧮"); close(); },
+    puzzle(){
+      S.letters={T:null,W:null,O:null,F:null,U:null,R:null}; S.lsel="T";
+      S.onDone=()=>solve("🔡","TWO + TWO = FOUR, in digits! 🎉","The vault accepted your arithmetic and opened.");
+      open(`<h2>Give every letter a digit</h2>
+        <div id="cryptbox"></div>
+        <div class="row" id="cryptletters"></div>
+        <div class="pad" id="cryptpad">
+          ${[1,2,3,4,5,6,7,8,9,0].map(n=>'<button data-dig="'+n+'">'+n+'</button>').join("")}
+          <button data-dig="x">⌫</button>
+        </div>
+        <p class="msg">Pick a letter, then a digit.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawCrypt();
+    }
+  },
+
+  /* ---------- 43 · Traffic Jam : slide the cars ---------- */
+  {
+    name:"Traffic Jam",
+    intro:"A car park, and the red car is boxed in. 🚗",
+    locked:"Drive the red car out of the gap on the right.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2b2b2b"/><rect y="470" width="800" height="130" fill="#3a3a3a"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:140,edge:"#c8c8c8",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">Cars only roll the way</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">they point. Get the red</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">one out of the gap.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the car park">
+        <rect x="380" y="180" width="250" height="250" rx="10" fill="#1d1d1d" stroke="#c8c8c8" stroke-width="5"/>
+        ${[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>`<rect x="${390+c*48}" y="${190+r*48}" width="42" height="42" rx="4" fill="#2f2f2f"/>`).join("")).join("")}
+        <rect x="392" y="288" width="88" height="40" rx="8" fill="#e04a4a"/>
+        <rect x="536" y="192" width="40" height="88" rx="8" fill="#4a8fe0"/>
+        <text x="646" y="315" font-size="24">➡️</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a parking meter"><text x="150" y="420" font-size="40">🅿️</text></g>
+      ${door({frame:"#4a4a4a",panel:"#6b6b6b",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#e8e8e8">Room 43 · Traffic Jam</text>`);
+    },
+    clue:()=>open(`<h2>The car park sign</h2>
+      <p>Each car rolls only <b>along its own length</b> — sideways cars go left and right,
+         upright cars go up and down. Nothing turns.</p>
+      <p class="mini">Tap a car to pick it, then use the arrows. The red car leaves through the gap on the right.</p>
+      <div class="row"><button class="btn" data-close>Right</button></div>`),
+    extra:()=>{ say("A parking meter, long expired. Nobody is coming back for these. 🅿️"); close(); },
+    puzzle(){
+      S.cars=[{id:"R",r:2,c:0,len:2,dir:"h",col:"#e04a4a"},
+              {id:"A",r:0,c:3,len:2,dir:"v",col:"#4a8fe0"},
+              {id:"B",r:2,c:3,len:2,dir:"v",col:"#3ddc97"},
+              {id:"C",r:4,c:2,len:2,dir:"h",col:"#ffd93d"}];
+      S.csel="R";
+      S.onDone=()=>solve("🚗","The red car is out! 🎉","The barrier lifted and the car park emptied behind you.");
+      open(`<h2>Get the red car out</h2>
+        <div class="gridp g5" id="cargrid"></div>
+        <div class="dpad">
+          <button data-car="u" style="grid-column:2;grid-row:1" aria-label="up">⬆️</button>
+          <button data-car="l" style="grid-column:1;grid-row:2" aria-label="left">⬅️</button>
+          <button data-car="d" style="grid-column:2;grid-row:2" aria-label="down">⬇️</button>
+          <button data-car="r" style="grid-column:3;grid-row:2" aria-label="right">➡️</button>
+        </div>
+        <p class="msg">Red car selected. Tap another car to pick it instead.</p>
+        <div class="row"><button class="btn ghost" data-carreset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawCars();
+    }
+  },
+
+  /* ---------- 44 · Knight's Tour : every square, once ---------- */
+  {
+    name:"Knight's Tour",
+    intro:"A chessboard floor, and only one legal way to walk. ♞",
+    locked:"Twenty-five squares, one knight, no square twice.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2e2622"/><rect y="460" width="800" height="140" fill="#3f352f"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#c9a24a",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">A knight moves two</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">squares one way and</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">one square across —</text>'+
+        '<text x="180" y="280" font-size="17" text-anchor="middle">an L shape</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="chess floor">
+        <rect x="380" y="180" width="250" height="250" rx="8" fill="#1f1a17" stroke="#c9a24a" stroke-width="5"/>
+        ${[0,1,2,3,4].map(r=>[0,1,2,3,4].map(c=>`<rect x="${390+c*48}" y="${190+r*48}" width="42" height="42"
+          fill="${(r+c)%2?'#5a4a3a':'#8a7358'}"/>`).join("")).join("")}
+        <text x="411" y="222" font-size="30">♞</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a chess book"><text x="150" y="420" font-size="40">📗</text></g>
+      ${door({frame:"#5c4a35",panel:"#7d6549",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#ffe3a8">Room 44 · Knight's Tour</text>`);
+    },
+    clue:()=>open(`<h2>How a knight walks</h2>
+      <p>Two squares in a straight line, then one square to the side — the letter <b>L</b>.
+         It hops over anything in between.</p>
+      <p class="mini">Tip: when you have a choice, step to the square with the <b>fewest</b> onward moves. Corners strand you.</p>
+      <div class="row"><button class="btn" data-close>Understood</button></div>`),
+    extra:()=>{ say("A battered book of chess puzzles. Page one: the knight. 📗"); close(); },
+    puzzle(){
+      S.ktour=[[0,0]];
+      S.onDone=()=>solve("♞","Every square, exactly once! 🎉","The knight bowed and the door opened behind it.");
+      open(`<h2>Visit all 25 squares</h2>
+        <div class="gridp g5" id="knightgrid"></div>
+        <p class="msg">1 of 25. Legal hops are outlined.</p>
+        <div class="row"><button class="btn ghost" data-knightreset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawKnight();
+    }
+  },
+
+  /* ---------- 45 · Nim Table : take the last match ---------- */
+  {
+    name:"Nim Table",
+    intro:"Fifteen matchsticks and a guard who never loses. 🔥",
+    locked:"Beat the guard and he will step aside.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#2b2419"/><rect y="450" width="800" height="150" fill="#3d3423"/>
+      ${sign({go:"clue",x:60,y:140,w:240,h:160,edge:"#c9a24a",inner:
+        '<text x="180" y="186" font-size="17" text-anchor="middle">Take 1, 2 or 3 matches.</text>'+
+        '<text x="180" y="214" font-size="17" text-anchor="middle">Then the guard takes.</text>'+
+        '<text x="180" y="246" font-size="17" text-anchor="middle">Whoever takes the</text>'+
+        '<text x="180" y="274" font-size="17" text-anchor="middle">LAST match wins.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the matches">
+        <rect x="360" y="230" width="280" height="150" rx="12" fill="#4a3f2a" stroke="#c9a24a" stroke-width="5"/>
+        ${[...Array(15)].map((_,i)=>`<rect x="${378+(i%8)*32}" y="${256+Math.floor(i/8)*56}" width="7" height="38" rx="3" fill="#e8d5a8"/>
+          <circle cx="${381+(i%8)*32}" cy="${254+Math.floor(i/8)*56}" r="6" fill="#c44"/>`).join("")}
+        <text x="500" y="368" font-size="18" text-anchor="middle" fill="#ffe3a8">15 matches</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="the guard"><text x="150" y="400" font-size="48">💂</text></g>
+      ${door({frame:"#5c4f2e",panel:"#7d6c40",x:680,y:180,w:100,h:270})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#ffe3a8">Room 45 · Nim Table</text>`);
+    },
+    clue:()=>open(`<h2>The guard explains</h2>
+      <p>"Fifteen matches. You take <b>1, 2 or 3</b>, then I take 1, 2 or 3.
+         Whoever takes the <b>last</b> match wins. You may go first."</p>
+      <p class="mini">He plays perfectly, so guessing will not work. Think about what number you want to <b>leave</b> him.</p>
+      <div class="row"><button class="btn" data-close>Deal</button></div>`),
+    extra:()=>{ say("The guard smiles. He has played this a great many times. 💂"); close(); },
+    puzzle(){
+      S.nim=15; S.nimMsg="Your move.";
+      S.onDone=()=>solve("🔥","You took the last match! 🎉",
+        "The trick is to always leave him a multiple of four: 12, then 8, then 4, then 0.");
+      open(`<h2>Take the last match</h2>
+        <div id="nimbox"></div>
+        <div class="row">
+          <button class="btn" data-nim="1">Take 1</button>
+          <button class="btn" data-nim="2">Take 2</button>
+          <button class="btn" data-nim="3">Take 3</button>
+        </div>
+        <p class="msg">Your move.</p>
+        <div class="row"><button class="btn ghost" data-nimreset>New game</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawNim();
+    }
+  },
+
+  /* ---------- 46 · Colour Sort : pour until each tube is one colour ---------- */
+  {
+    name:"Colour Sort",
+    intro:"Five glass tubes and a very jumbled set of marbles. 🧫",
+    locked:"Each colour in its own tube, then the door opens.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#1d2a33"/><rect y="450" width="800" height="150" fill="#283a46"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#7fb0c8",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">A marble may only go</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">onto its own colour,</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">or into an empty tube</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the tubes">
+        ${[0,1,2,3,4].map(i=>`<rect x="${370+i*54}" y="220" width="40" height="150" rx="14"
+          fill="#9fd6ea" opacity=".25" stroke="#cfe8f5" stroke-width="4"/>`).join("")}
+        ${[["#e05a5a","#3ddc97","#5ec8ff"],["#3ddc97","#5ec8ff","#e05a5a"],["#5ec8ff","#e05a5a","#3ddc97"]]
+          .map((t,i)=>t.map((col,j)=>`<circle cx="${390+i*54}" cy="${340-j*44}" r="15" fill="${col}"/>`).join("")).join("")}
+        <text x="500" y="400" font-size="18" text-anchor="middle" fill="#cfe8f5">five tubes</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a spilled marble"><text x="150" y="420" font-size="40">🔵</text></g>
+      ${door({frame:"#2f5060",panel:"#447287",x:680,y:180,w:100,h:270})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe8f5">Room 46 · Colour Sort</text>`);
+    },
+    clue:()=>open(`<h2>The rule of the tubes</h2>
+      <p>Tap a tube to lift its <b>top</b> marble, then tap where it goes. It may only land on a
+         marble of the <b>same colour</b>, or in an <b>empty</b> tube.</p>
+      <p class="mini">Two tubes are empty. It can be done in eight pours — and you cannot get stuck for good, since Start over is right there.</p>
+      <div class="row"><button class="btn" data-close>Pouring</button></div>`),
+    extra:()=>{ say("A stray blue marble on the floor. It rolls back when you nudge it. 🔵"); close(); },
+    puzzle(){
+      S.tubes=[["R","G","B"],["G","B","R"],["B","R","G"],[],[]]; S.tsel=null;
+      S.onDone=()=>solve("🧫","Every tube, one colour! 🎉","The tubes glowed and the lock let go.");
+      open(`<h2>Sort the marbles</h2>
+        <div class="tubes" id="tubebox"></div>
+        <p class="msg">Tap a tube to lift its top marble.</p>
+        <div class="row"><button class="btn ghost" data-tubereset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawTubes();
+    }
+  },
+
+  /* ---------- 47 · Lights Out : the plus-shape switch ---------- */
+  {
+    name:"Lights Out",
+    intro:"Nine lamps, all dark, and one very stubborn switchboard. 💡",
+    locked:"All nine lamps, lit at once.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#191922"/><rect y="460" width="800" height="140" fill="#242432"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#8f8fb0",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">Pressing a lamp flips</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">it AND the lamps</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">directly above, below</text>'+
+        '<text x="180" y="280" font-size="17" text-anchor="middle">and beside it</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="the lamp wall">
+        <rect x="390" y="190" width="230" height="230" rx="12" fill="#101018" stroke="#8f8fb0" stroke-width="5"/>
+        ${[0,1,2].map(r=>[0,1,2].map(c=>`<circle cx="${440+c*70}" cy="${240+r*70}" r="26"
+          fill="#2a2a3a" stroke="#8f8fb0" stroke-width="4"/>`).join("")).join("")}
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a fuse box"><text x="150" y="420" font-size="40">🔌</text></g>
+      ${door({frame:"#33334a",panel:"#4b4b6b",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#d8d8f0">Room 47 · Lights Out</text>`);
+    },
+    clue:()=>open(`<h2>The switchboard</h2>
+      <p>Pressing a lamp flips that lamp <b>and its four neighbours</b> — up, down, left and right.
+         Diagonals are untouched.</p>
+      <p class="mini">Order does not matter, and pressing the same lamp twice undoes it. So the question is really: <b>which</b> lamps do you press?</p>
+      <div class="row"><button class="btn" data-close>Which ones…</button></div>`),
+    extra:()=>{ say("A fuse box, humming. All fuses intact, annoyingly. 🔌"); close(); },
+    puzzle(){
+      S.lo=[0,0,0,0,0,0,0,0,0];
+      S.onDone=()=>solve("💡","All nine lamps, lit! 🎉","Four corners and the middle — the only set that works.");
+      open(`<h2>Light every lamp</h2>
+        <div class="gridp g3" id="logrid"></div>
+        <p class="msg">0 of 9 lit</p>
+        <div class="row"><button class="btn ghost" data-loreset>All off</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawLO();
+    }
+  },
+
+  /* ---------- 48 · Peg Solitaire : leave exactly one ---------- */
+  {
+    name:"Peg Solitaire",
+    intro:"A triangle of pegs with one empty hole at the top. 🔺",
+    locked:"One peg left. Not two. One.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#33281d"/><rect y="460" width="800" height="140" fill="#463827"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#c9a24a",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">Jump a peg over a</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">neighbour into an</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">empty hole. The one</text>'+
+        '<text x="180" y="280" font-size="17" text-anchor="middle">jumped over is out.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="peg board">
+        <path d="M500 175 L620 400 L380 400Z" fill="#6b5335" stroke="#c9a24a" stroke-width="5"/>
+        ${[0,1,2,3,4].map(r=>[...Array(r+1)].map((_,c)=>`<circle cx="${500-r*21+c*42}" cy="${205+r*44}" r="13"
+          fill="${r===0?'#33281d':'#e8c07a'}"/>`).join("")).join("")}
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a diner menu"><text x="150" y="420" font-size="40">🍽️</text></g>
+      ${door({frame:"#5c4a2e",panel:"#7d6740",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#ffe3a8">Room 48 · Peg Solitaire</text>`);
+    },
+    clue:()=>open(`<h2>How to jump</h2>
+      <p>A peg jumps <b>straight over one neighbour</b> into the empty hole directly beyond it —
+         along a row or either diagonal. The peg you jumped over is removed.</p>
+      <p class="mini">Fifteen holes, fourteen pegs. Leaving a single peg takes thirteen jumps and is entirely possible.</p>
+      <div class="row"><button class="btn" data-close>Thirteen jumps</button></div>`),
+    extra:()=>{ say("A laminated diner menu with this exact game printed on the back. 🍽️"); close(); },
+    puzzle(){
+      S.pegs2=Array(15).fill(1); S.pegs2[0]=0; S.psel=null;
+      S.onDone=()=>solve("🔺","One peg left — genius! 🎉","The board folded itself away and the door opened.");
+      open(`<h2>Leave exactly one peg</h2>
+        <div class="tri" id="tribox"></div>
+        <p class="msg">14 pegs left.</p>
+        <div class="row"><button class="btn ghost" data-pegreset>Start over</button>
+          <button class="btn alt" data-close>Later</button></div>`);
+      drawTri();
+    }
+  },
+
+  /* ---------- 49 · Cage Grid : arithmetic sudoku ---------- */
+  {
+    name:"Cage Grid",
+    intro:"A grid split into little cages, each with a sum written in it. ➗",
+    locked:"Every cage and every line has to agree.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#1f2b22"/><rect y="460" width="800" height="140" fill="#2b3b2f"/>
+      ${sign({go:"clue",x:60,y:150,w:240,h:150,edge:"#7fc8a0",inner:
+        '<text x="180" y="196" font-size="17" text-anchor="middle">1 to 4 in every row</text>'+
+        '<text x="180" y="224" font-size="17" text-anchor="middle">and column — and each</text>'+
+        '<text x="180" y="252" font-size="17" text-anchor="middle">cage must make its</text>'+
+        '<text x="180" y="280" font-size="17" text-anchor="middle">own little sum</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="cage grid">
+        <rect x="390" y="190" width="230" height="230" rx="10" fill="#f0fff5" stroke="#7fc8a0" stroke-width="6"/>
+        ${[0,1,2,3].map(r=>[0,1,2,3].map(c=>`<rect x="${402+c*54}" y="${202+r*54}" width="48" height="48" rx="5"
+          fill="${["#d8f0e2","#c6e8d4","#e8f6ee","#b9e0c9"][(r+c)%4]}"/>`).join("")).join("")}
+        <text x="418" y="222" font-size="14" fill="#2b3b2f">3+</text>
+        <text x="526" y="222" font-size="14" fill="#2b3b2f">12×</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="a calculator"><text x="150" y="420" font-size="40">🧮</text></g>
+      ${door({frame:"#33553f",panel:"#4b7d5c",x:680,y:180,w:100,h:280})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#d8f0e2">Room 49 · Cage Grid</text>`);
+    },
+    clue:()=>open(`<h2>The two rules</h2>
+      <p>1. Every <b>row</b> and every <b>column</b> holds 1, 2, 3 and 4 — once each.<br>
+         2. Each outlined <b>cage</b> must produce the number written in it, using the sign shown.</p>
+      <p class="mini">A cage like <b>12×</b> over two squares can only be 3 and 4.</p>
+      <div class="row"><button class="btn" data-close>Two rules</button></div>`),
+    extra:()=>{ say("A pocket calculator with a flat battery. You are on your own. 🧮"); close(); },
+    puzzle(){
+      S.cages=[{t:"3+",op:"+",v:3,cells:[[0,0],[0,1]]},
+               {t:"12×",op:"*",v:12,cells:[[0,2],[1,2]]},
+               {t:"4×",op:"*",v:4,cells:[[0,3],[1,3]]},
+               {t:"5+",op:"+",v:5,cells:[[1,0],[1,1]]},
+               {t:"7+",op:"+",v:7,cells:[[2,0],[3,0]]},
+               {t:"4×",op:"*",v:4,cells:[[2,1],[2,2]]},
+               {t:"5+",op:"+",v:5,cells:[[2,3],[3,3]]},
+               {t:"2×",op:"*",v:2,cells:[[3,1],[3,2]]}];
+      S.kk=[0,1,2,3].map(()=>[0,0,0,0]);
+      S.onDone=()=>solve("➗","Every cage and every line! 🎉","The grid folded flat and slid under the door.");
+      open(`<h2>Fill the grid with 1–4</h2>
+        <div class="gridp g4" id="kkgrid"></div>
+        <p class="msg">Tap a square to change it.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawKK();
+    }
+  },
+
+  /* ---------- 50 · Skyline : how many towers can you see ---------- */
+  {
+    name:"Skyline",
+    intro:"The last door. A city grid, and a note about what you can see. 🏙️",
+    locked:"Build the skyline exactly as the numbers demand.",
+    draw(){ return svg(`
+      <rect width="800" height="600" fill="#0d1526"/>${stars(60,29)}
+      <rect y="470" width="800" height="130" fill="#182742"/>
+      ${[0,1,2,3,4,5].map(i=>`<rect x="${60+i*40}" y="${380+(i%3)*30}" width="30" height="${120-(i%3)*30}" fill="#23375c"/>`).join("")}
+      ${sign({go:"clue",x:60,y:120,w:240,h:150,edge:"#7f9fd0",inner:
+        '<text x="180" y="166" font-size="17" text-anchor="middle">A taller tower hides</text>'+
+        '<text x="180" y="194" font-size="17" text-anchor="middle">every shorter one</text>'+
+        '<text x="180" y="222" font-size="17" text-anchor="middle">behind it. The numbers</text>'+
+        '<text x="180" y="250" font-size="17" text-anchor="middle">count what you see.</text>'})}
+      <g class="hot" data-go="puzzle" tabindex="0" role="button" aria-label="city grid">
+        <rect x="400" y="180" width="230" height="230" rx="10" fill="#0a1120" stroke="#7f9fd0" stroke-width="6"/>
+        ${[0,1,2,3].map(r=>[0,1,2,3].map(c=>`<rect x="${412+c*54}" y="${192+r*54}" width="48" height="48" rx="5" fill="#16233c"/>`).join("")).join("")}
+        <text x="515" y="440" font-size="19" text-anchor="middle" fill="#cfe0ff">the city grid</text>
+      </g>
+      <g class="hot" data-go="extra" tabindex="0" role="button" aria-label="the fox, one last time"><text x="140" y="440" font-size="52">🦊</text></g>
+      ${door({frame:"#2c3a5e",panel:"#44598c",x:670,y:150,w:110,h:310})}
+      <text x="400" y="56" font-size="28" text-anchor="middle" fill="#cfe0ff">Room 50 · Skyline</text>`);
+    },
+    clue:()=>open(`<h2>How to read the skyline</h2>
+      <p>Every row and column holds towers of height <b>1, 2, 3 and 4</b> — one each.</p>
+      <p>A number outside the grid says how many towers you can <b>see</b> looking in from
+         there. A taller tower hides every shorter one behind it.</p>
+      <p class="mini">A clue of <b>1</b> means the nearest tower is the 4. A clue of <b>4</b> means they climb 1, 2, 3, 4.</p>
+      <div class="row"><button class="btn" data-close>Last one</button></div>`),
+    extra:()=>{ say("The fox is already sitting by the exit. It knew. 🦊"); close(); },
+    puzzle(){
+      S.skyTop=[4,3,2,1]; S.skyBot=[1,2,2,2]; S.skyLeft=[4,3,2,1]; S.skyRight=[1,2,2,2];
+      S.sky=[0,1,2,3].map(()=>[0,0,0,0]);
+      S.onDone=()=>solve("🏙️","The whole skyline, exactly right! 🎉","Fifty rooms. Fifty star keys. The last door opens.");
+      open(`<h2>Build the skyline</h2>
+        <div id="skybox"></div>
+        <p class="msg">Tap a square to change its height.</p>
+        <div class="row"><button class="btn alt" data-close>Later</button></div>`);
+      drawSky();
+    }
   }
   ];
 
@@ -2791,6 +3269,320 @@
     }
   }
 
+  /* ---------- zebra logic grid (room 41) ---------- */
+  const ZCOL=["·","🟥","🟦","🟩"], ZPET=["·","🐈","🐕","🐦"];
+  function drawZebra(){
+    const box=$("zebrabox"); if(!box) return;
+    box.innerHTML='<div class="zebra">'+
+      '<span class="zl">house</span>'+[1,2,3].map(n=>'<span class="zh">'+n+'</span>').join("")+
+      '<span class="zl">colour</span>'+S.zc.map((v,i)=>'<button data-zc="'+i+'">'+ZCOL[v]+'</button>').join("")+
+      '<span class="zl">pet</span>'+S.zp.map((v,i)=>'<button data-zp="'+i+'">'+ZPET[v]+'</button>').join("")+
+      '</div>';
+  }
+  function zebraCheck(){
+    // solution: house1 green+dog, house2 red+cat, house3 blue+bird
+    return S.zc.join("")==="312" && S.zp.join("")==="213";
+  }
+  function zebraTap(b){
+    if(b.dataset.zc!==undefined){ const i=+b.dataset.zc; S.zc[i]=(S.zc[i]+1)%4; }
+    else { const i=+b.dataset.zp; S.zp[i]=(S.zp[i]+1)%4; }
+    drawZebra();
+    if(zebraCheck()) return void setTimeout(S.onDone,350);
+    msg("");
+  }
+
+  /* ---------- cryptarithm (room 42) ---------- */
+  function drawCrypt(){
+    const box=$("cryptbox"); if(!box) return;
+    const d=k=>S.letters[k]===null?"?":S.letters[k];
+    box.innerHTML='<div class="sum">'+
+      '<div>'+["T","W","O"].map(k=>'<i>'+d(k)+'</i>').join("")+'</div>'+
+      '<div><b>+</b>'+["T","W","O"].map(k=>'<i>'+d(k)+'</i>').join("")+'</div>'+
+      '<hr>'+
+      '<div>'+["F","O","U","R"].map(k=>'<i>'+d(k)+'</i>').join("")+'</div></div>';
+    $("cryptletters").innerHTML=Object.keys(S.letters).map(k=>
+      '<button class="big'+(S.lsel===k?" picked":"")+'" data-let="'+k+'">'+k+
+      '<br><small>'+(S.letters[k]===null?"–":S.letters[k])+'</small></button>').join("");
+  }
+  function cryptCheck(){
+    const L=S.letters;
+    if(Object.values(L).some(v=>v===null)) return false;
+    const vals=Object.values(L);
+    if(new Set(vals).size!==vals.length) return false;
+    if(L.T===0||L.F===0) return false;
+    const two=L.T*100+L.W*10+L.O, four=L.F*1000+L.O*100+L.U*10+L.R;
+    return two+two===four;
+  }
+  function letTap(b){ S.lsel=b.dataset.let; drawCrypt(); msg("Now pick a digit."); }
+  function digTap(b){
+    if(!S.lsel) return msg("Pick a letter first.");
+    const v=b.dataset.dig;
+    if(v==="x") S.letters[S.lsel]=null;
+    else{
+      const n=+v;
+      if(Object.entries(S.letters).some(([k,d])=>k!==S.lsel&&d===n))
+        return msg("Another letter already has that digit.");
+      S.letters[S.lsel]=n;
+    }
+    drawCrypt();
+    if(cryptCheck()) return void setTimeout(S.onDone,350);
+    const filled=Object.values(S.letters).filter(v=>v!==null).length;
+    msg(filled===6 ? "All six placed — but the sum does not come out." : filled+" of 6 letters placed");
+  }
+
+  /* ---------- traffic jam (room 43) ---------- */
+  function carCells(c){
+    const out=[];
+    for(let i=0;i<c.len;i++) out.push(c.dir==="h"?[c.r,c.c+i]:[c.r+i,c.c]);
+    return out;
+  }
+  function carAt(r,c){ return S.cars.find(x=>carCells(x).some(p=>p[0]===r&&p[1]===c)); }
+  function drawCars(){
+    const g=$("cargrid"); if(!g) return;
+    let h="";
+    for(let r=0;r<5;r++) for(let c=0;c<5;c++){
+      const car=carAt(r,c);
+      h+= car
+        ? '<button class="carcell'+(S.csel===car.id?" picked":"")+'" data-carsel="'+car.id+
+          '" style="background:'+car.col+';border-color:'+car.col+'">'+(car.id==="R"?"🚗":"")+'</button>'
+        : '<div></div>';
+    }
+    g.innerHTML=h;
+  }
+  function carSel(b){ S.csel=b.dataset.carsel; drawCars(); msg("Selected car "+S.csel+"."); }
+  function carMove(b){
+    const car=S.cars.find(c=>c.id===S.csel);
+    if(!car) return msg("Pick a car first.");
+    const d=b.dataset.car;
+    if(car.dir==="h" && (d==="u"||d==="d")) return msg("That car only rolls left and right.");
+    if(car.dir==="v" && (d==="l"||d==="r")) return msg("That car only rolls up and down.");
+    const dr=d==="u"?-1:d==="d"?1:0, dc=d==="l"?-1:d==="r"?1:0;
+    const next=carCells(car).map(([r,c])=>[r+dr,c+dc]);
+    // the red car may drive off the right edge
+    const off=next.some(([r,c])=>c>4);
+    if(off){
+      if(car.id!=="R"||car.r!==2) return msg("That car cannot leave the car park.");
+      car.c++; drawCars();
+      if(car.c>=4) return void setTimeout(S.onDone,350);
+      return msg("");
+    }
+    if(next.some(([r,c])=>r<0||r>4||c<0)) return msg("The wall is in the way.");
+    if(next.some(([r,c])=>{ const o=carAt(r,c); return o && o.id!==car.id; }))
+      return msg("Another car is in the way.");
+    car.r+=dr; car.c+=dc; drawCars();
+    if(car.id==="R" && car.c+car.len>4) return void setTimeout(S.onDone,350);
+    msg("");
+  }
+
+  /* ---------- knight's tour (room 44) ---------- */
+  const KJ=[[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]];
+  function knightOK(a,b){ return KJ.some(([dr,dc])=>a[0]+dr===b[0]&&a[1]+dc===b[1]); }
+  function drawKnight(){
+    const g=$("knightgrid"); if(!g) return;
+    const head=S.ktour[S.ktour.length-1];
+    let h="";
+    for(let r=0;r<5;r++) for(let c=0;c<5;c++){
+      const at=S.ktour.findIndex(p=>p[0]===r&&p[1]===c);
+      const isHead=at===S.ktour.length-1;
+      const legal=at<0 && knightOK(head,[r,c]);
+      h+='<button class="'+[at>=0?"on":"",isHead?"head":"",legal?"can":""].filter(Boolean).join(" ")+
+         '" data-kn="'+r+'-'+c+'">'+(isHead?"♞":at>=0?at+1:"")+'</button>';
+    }
+    g.innerHTML=h;
+  }
+  function knightTap(b){
+    const [r,c]=b.dataset.kn.split("-").map(Number);
+    const head=S.ktour[S.ktour.length-1];
+    if(head[0]===r&&head[1]===c){
+      if(S.ktour.length===1) return msg("That is where you started.");
+      S.ktour.pop(); drawKnight(); return msg(S.ktour.length+" of 25.");
+    }
+    if(S.ktour.some(p=>p[0]===r&&p[1]===c)) return msg("The knight has been there already.");
+    if(!knightOK(head,[r,c])) return msg("A knight cannot reach that square from here.");
+    S.ktour.push([r,c]); drawKnight();
+    if(S.ktour.length===25) return void setTimeout(S.onDone,350);
+    msg(S.ktour.length+" of 25.");
+  }
+
+  /* ---------- nim (room 45) ---------- */
+  function drawNim(){
+    const box=$("nimbox"); if(!box) return;
+    box.innerHTML='<div class="sticks">'+"🔥".repeat(0)+
+      [...Array(S.nim)].map(()=>'<i></i>').join("")+'</div>'+
+      '<p class="bigtime">'+S.nim+' left</p>';
+  }
+  function nimTap(b){
+    const take=+b.dataset.nim;
+    if(take>S.nim) return msg("There are only "+S.nim+" left.");
+    S.nim-=take;
+    if(S.nim===0){ drawNim(); return void setTimeout(S.onDone,350); }
+    const g=(S.nim%4)||1;                       // the guard plays perfectly
+    S.nim-=g; drawNim();
+    if(S.nim===0){
+      wrong(); msg("The guard took the last match. He grins. Try again.");
+      S.resetTimer=setTimeout(()=>{ S.nim=15; drawNim(); msg("Your move."); },1600);
+      return;
+    }
+    msg("You took "+take+", the guard took "+g+". "+S.nim+" left.");
+  }
+
+  /* ---------- colour sort (room 46) ---------- */
+  const BALL={R:"#e05a5a",G:"#3ddc97",B:"#5ec8ff"};
+  function drawTubes(){
+    const box=$("tubebox"); if(!box) return;
+    box.innerHTML=S.tubes.map((t,i)=>
+      '<button class="tube'+(S.tsel===i?" picked":"")+'" data-tube="'+i+'">'+
+      [0,1,2].map(j=>{ const b=t[2-j];
+        return '<i'+(b?' style="background:'+BALL[b]+'"':' class="empty"')+'></i>'; }).join("")+
+      '</button>').join("");
+  }
+  function tubeTap(b){
+    const i=+b.dataset.tube;
+    if(S.tsel===null){
+      if(!S.tubes[i].length) return msg("That tube is empty.");
+      S.tsel=i; drawTubes(); return msg("Lifted a marble — now tap where it goes.");
+    }
+    if(S.tsel===i){ S.tsel=null; drawTubes(); return msg("Put it back."); }
+    const from=S.tubes[S.tsel], to=S.tubes[i], ball=from[from.length-1];
+    if(to.length>=3){ S.tsel=null; drawTubes(); return msg("That tube is full."); }
+    if(to.length && to[to.length-1]!==ball){ S.tsel=null; drawTubes(); return msg("Only onto its own colour, or an empty tube."); }
+    to.push(from.pop()); S.tsel=null; drawTubes();
+    if(S.tubes.every(t=>!t.length||(t.length===3&&t.every(x=>x===t[0]))))
+      return void setTimeout(S.onDone,350);
+    msg("");
+  }
+
+  /* ---------- lights out 3x3 (room 47) ---------- */
+  function drawLO(){
+    const g=$("logrid"); if(!g) return;
+    g.innerHTML=S.lo.map((v,i)=>'<button class="'+(v?"on":"")+'" data-lo="'+i+'">'+(v?"💡":"")+'</button>').join("");
+  }
+  function loTap(b){
+    const i=+b.dataset.lo, r=Math.floor(i/3), c=i%3;
+    [[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{
+      const nr=r+dr, nc=c+dc;
+      if(nr>=0&&nr<3&&nc>=0&&nc<3) S.lo[nr*3+nc]^=1;
+    });
+    drawLO();
+    if(S.lo.every(v=>v)) return void setTimeout(S.onDone,350);
+    msg(S.lo.filter(v=>v).length+" of 9 lit");
+  }
+
+  /* ---------- peg solitaire (room 48) ---------- */
+  const TRI_IDX=(r,c)=>r*(r+1)/2+c;
+  const TRI_JUMPS=(()=>{
+    const out=[], ok=(r,c)=>r>=0&&r<5&&c>=0&&c<=r;
+    for(let r=0;r<5;r++) for(let c=0;c<=r;c++)
+      [[0,1],[0,-1],[1,0],[-1,0],[1,1],[-1,-1]].forEach(([dr,dc])=>{
+        const mr=r+dr,mc=c+dc,tr=r+2*dr,tc=c+2*dc;
+        if(ok(mr,mc)&&ok(tr,tc)) out.push([TRI_IDX(r,c),TRI_IDX(mr,mc),TRI_IDX(tr,tc)]);
+      });
+    return out;
+  })();
+  function drawTri(){
+    const box=$("tribox"); if(!box) return;
+    let h="";
+    for(let r=0;r<5;r++){
+      h+='<div class="trirow">';
+      for(let c=0;c<=r;c++){
+        const i=TRI_IDX(r,c);
+        const canLand=S.psel!==null && TRI_JUMPS.some(([f,o,t])=>f===S.psel&&t===i&&S.pegs2[o]);
+        h+='<button class="hole'+(S.pegs2[i]?" peg":"")+(S.psel===i?" picked":"")+
+           (canLand?" can":"")+'" data-peg2="'+i+'"></button>';
+      }
+      h+='</div>';
+    }
+    box.innerHTML=h;
+  }
+  function pegTap2(b){
+    const i=+b.dataset.peg2;
+    if(S.psel===null){
+      if(!S.pegs2[i]) return msg("There is no peg there.");
+      S.psel=i; drawTri(); return msg("Now tap an empty hole two steps away.");
+    }
+    if(S.psel===i){ S.psel=null; drawTri(); return msg(""); }
+    const j=TRI_JUMPS.find(([f,o,t])=>f===S.psel&&t===i&&S.pegs2[o]&&!S.pegs2[t]);
+    if(!j){ S.psel=null; drawTri(); return msg("Not a legal jump."); }
+    S.pegs2[j[0]]=0; S.pegs2[j[1]]=0; S.pegs2[j[2]]=1; S.psel=null; drawTri();
+    const left=S.pegs2.reduce((a,b)=>a+b,0);
+    if(left===1) return void setTimeout(S.onDone,350);
+    const stuck=!TRI_JUMPS.some(([f,o,t])=>S.pegs2[f]&&S.pegs2[o]&&!S.pegs2[t]);
+    msg(left+" pegs left."+(stuck?" No jumps remain — start over.":""));
+  }
+
+  /* ---------- cage grid / kenken (room 49) ---------- */
+  function latinOK(g){
+    for(let i=0;i<4;i++){
+      if(g[i].slice().sort().join("")!=="1234") return false;
+      if([0,1,2,3].map(r=>g[r][i]).sort().join("")!=="1234") return false;
+    }
+    return true;
+  }
+  function cagesOK(g){
+    return S.cages.every(cg=>{
+      const vals=cg.cells.map(([r,c])=>g[r][c]);
+      if(vals.some(v=>!v)) return false;
+      const tot = cg.op==="+" ? vals.reduce((a,b)=>a+b,0) : vals.reduce((a,b)=>a*b,1);
+      return tot===cg.v;
+    });
+  }
+  function cageOf(r,c){ return S.cages.find(cg=>cg.cells.some(p=>p[0]===r&&p[1]===c)); }
+  function drawKK(){
+    const g=$("kkgrid"); if(!g) return;
+    const tint=["#e8f6ee","#d8f0e2","#c6e8d4","#b9e0c9","#eef8f2","#cfeadd","#dff2e7","#c2e5d1"];
+    let h="";
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+      const cg=cageOf(r,c), idx=S.cages.indexOf(cg);
+      const first=cg.cells[0][0]===r&&cg.cells[0][1]===c;
+      h+='<button data-kk="'+r+'-'+c+'" style="background:'+tint[idx%tint.length]+'">'+
+         (first?'<small class="cage">'+cg.t+'</small>':'')+
+         '<span>'+(S.kk[r][c]||"")+'</span></button>';
+    }
+    g.innerHTML=h;
+  }
+  function kkTap(b){
+    const [r,c]=b.dataset.kk.split("-").map(Number);
+    S.kk[r][c]=(S.kk[r][c]+1)%5;
+    drawKK();
+    if(latinOK(S.kk)&&cagesOK(S.kk)) return void setTimeout(S.onDone,350);
+    msg(S.kk.flat().filter(Boolean).length+" of 16 filled");
+  }
+
+  /* ---------- skyline / skyscrapers (room 50) ---------- */
+  function seen(line){
+    let best=0,n=0;
+    line.forEach(v=>{ if(v>best){ best=v; n++; } });
+    return n;
+  }
+  function skyOK(g){
+    if(!latinOK(g)) return false;
+    for(let i=0;i<4;i++){
+      const row=g[i], col=[0,1,2,3].map(r=>g[r][i]);
+      if(seen(row)!==S.skyLeft[i] || seen(row.slice().reverse())!==S.skyRight[i]) return false;
+      if(seen(col)!==S.skyTop[i] || seen(col.slice().reverse())!==S.skyBot[i]) return false;
+    }
+    return true;
+  }
+  function drawSky(){
+    const box=$("skybox"); if(!box) return;
+    let h='<div class="sky">';
+    h+='<span></span>'+S.skyTop.map(v=>'<span class="sc">'+v+'</span>').join("")+'<span></span>';
+    for(let r=0;r<4;r++){
+      h+='<span class="sc">'+S.skyLeft[r]+'</span>';
+      for(let c=0;c<4;c++) h+='<button data-sky="'+r+'-'+c+'">'+(S.sky[r][c]||"")+'</button>';
+      h+='<span class="sc">'+S.skyRight[r]+'</span>';
+    }
+    h+='<span></span>'+S.skyBot.map(v=>'<span class="sc">'+v+'</span>').join("")+'<span></span>';
+    box.innerHTML=h+'</div>';
+  }
+  function skyTap(b){
+    const [r,c]=b.dataset.sky.split("-").map(Number);
+    S.sky[r][c]=(S.sky[r][c]+1)%5;
+    drawSky();
+    if(skyOK(S.sky)) return void setTimeout(S.onDone,350);
+    msg(S.sky.flat().filter(Boolean).length+" of 16 towers placed");
+  }
+
   /* ---------- rendering & flow ---------- */
   function render(){
     const R=ROOMS[S.room];
@@ -2831,6 +3623,7 @@
   function goRoom(n){
     S.room=n; S.want=[]; S.got=[]; S.picked=[]; S.code=null; S.busy=false;
     S.showGot=false; S.codeLen=1; S.entry=""; S.held=null; S.sel=null; S.asked=null; S.accusing=false;
+    S.tsel=null; S.psel=null; S.lsel=null;
     clearTimeout(S.resetTimer);
     close(); render(); say(ROOMS[n].intro);
     if(ROOMS[n].banner)
@@ -2847,7 +3640,7 @@
     const canResume = S.furthest>0;
     open('<h2>⭐ Star Key Escape</h2>'+
       '<p>'+ROOMS.length+' rooms, '+ROOMS.length+' star keys.<br>1–10 gentle · 11–20 bigger kids · '+
-      '21–30 brain-benders · 31–40 grandmaster.</p>'+
+      '21–30 brain-benders · 31–40 grandmaster · 41–50 legend.</p>'+
       '<div class="map">'+ROOMS.map((r,i)=>'<b'+(i<=S.furthest?' class="done"':'')+'>'+(i+1)+'</b>').join("")+'</div>'+
       '<div class="row">'+
         (canResume?'<button class="btn" data-resume>Continue — Room '+(S.furthest+1)+'</button>':'')+
@@ -2882,6 +3675,14 @@
     if(b.hasAttribute("data-pathreset")){ S.path=[[0,0]]; drawPath(); return msg("1 of 16 tiles."); }
     if(b.hasAttribute("data-weigh"))   return weighTap();
     if(b.hasAttribute("data-coinclear")){ S.pan=[0,0,0,0,0,0,0,0]; drawCoins(); return msg(""); }
+    if(b.hasAttribute("data-carreset")){ S.cars=[{id:"R",r:2,c:0,len:2,dir:"h",col:"#e04a4a"},
+        {id:"A",r:0,c:3,len:2,dir:"v",col:"#4a8fe0"},{id:"B",r:2,c:3,len:2,dir:"v",col:"#3ddc97"},
+        {id:"C",r:4,c:2,len:2,dir:"h",col:"#ffd93d"}]; S.csel="R"; drawCars(); return msg(""); }
+    if(b.hasAttribute("data-knightreset")){ S.ktour=[[0,0]]; drawKnight(); return msg("1 of 25."); }
+    if(b.hasAttribute("data-nimreset")){ clearTimeout(S.resetTimer); S.nim=15; drawNim(); return msg("Your move."); }
+    if(b.hasAttribute("data-tubereset")){ S.tubes=[["R","G","B"],["G","B","R"],["B","R","G"],[],[]]; S.tsel=null; drawTubes(); return msg(""); }
+    if(b.hasAttribute("data-loreset")){ S.lo=[0,0,0,0,0,0,0,0,0]; drawLO(); return msg("0 of 9 lit"); }
+    if(b.hasAttribute("data-pegreset")){ S.pegs2=Array(15).fill(1); S.pegs2[0]=0; S.psel=null; drawTri(); return msg("14 pegs left."); }
     if(b.hasAttribute("data-accuse")){ S.accusing=true; drawCoins(); return msg("Tap the coin you think is fake."); }
     if(b.dataset.ord  !== undefined) return ordTap(b);
     if(b.dataset.pick !== undefined) return pickTap(b);
@@ -2909,6 +3710,18 @@
     if(b.dataset.sok  !== undefined) return sokTap(b);
     if(b.dataset.path !== undefined) return pathTap(b);
     if(b.dataset.coin !== undefined) return coinTap(b);
+    if(b.dataset.zc   !== undefined || b.dataset.zp !== undefined) return zebraTap(b);
+    if(b.dataset.let  !== undefined) return letTap(b);
+    if(b.dataset.dig  !== undefined) return digTap(b);
+    if(b.dataset.carsel!==undefined) return carSel(b);
+    if(b.dataset.car  !== undefined) return carMove(b);
+    if(b.dataset.kn   !== undefined) return knightTap(b);
+    if(b.dataset.nim  !== undefined) return nimTap(b);
+    if(b.dataset.tube !== undefined) return tubeTap(b);
+    if(b.dataset.lo   !== undefined) return loTap(b);
+    if(b.dataset.peg2 !== undefined) return pegTap2(b);
+    if(b.dataset.kk   !== undefined) return kkTap(b);
+    if(b.dataset.sky  !== undefined) return skyTap(b);
   });
   scrim.addEventListener("click", e=>{
     if(e.target!==scrim) return;
