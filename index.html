@@ -159,6 +159,9 @@
     color:var(--ink2); border:1px solid var(--line); border-radius:999px; padding:5px 11px;
     background:var(--panel); box-shadow:var(--shadow-sm); transition:background .15s ease, color .15s ease}
   .jump:hover{background:#fff; color:var(--ink)}
+  .vox{font-size:13px; line-height:1; padding:4px 9px}
+  .vox[aria-pressed="false"]{opacity:.45}
+  .vox[hidden]{display:none}
 
   .tally{display:grid; grid-template-columns:auto auto; gap:2px 12px; justify-content:center;
     align-items:baseline; margin:14px 0 10px}
@@ -516,6 +519,7 @@
       <span class="bar"><i id="fill"></i></span>
     </div>
     <button class="jump" id="jump" aria-label="go to another room">Rooms</button>
+    <button class="jump vox" id="vox" aria-pressed="true" aria-label="say the sound effects out loud" title="sound effects">🔊</button>
   </header>
 
   <div class="stage" id="stage"></div>
@@ -533,7 +537,7 @@
   "use strict";
   const $ = id => document.getElementById(id);
   const stage=$("stage"), scrim=$("scrim"), card=$("card");
-  const SAVE="starKeyEscape.furthest";
+  const SAVE="starKeyEscape.furthest", VOICE="starKeyEscape.voice";
 
   /* ---------- state (memory is the source of truth; storage is write-through) ---------- */
   const S = {
@@ -554,6 +558,64 @@
   }
   function save(){
     try{ localStorage.setItem(SAVE,String(S.furthest)); }catch(e){}
+  }
+
+  /* ---------- the sound effects, out loud, in English ---------- */
+  const canSpeak = typeof speechSynthesis!=="undefined" && typeof SpeechSynthesisUtterance!=="undefined";
+  let voiceOn=true, enVoice=null;
+
+  // the default voice follows the machine's locale, and a non-English one turns
+  // "Click-clack!" into nonsense — so always hand the utterance an English voice
+  // a machine can list a hundred voices, half of them novelty ones; take a plain
+  // narrator: the system's own English default, else a known-good name, else any
+  const PLAIN=/^(samantha|alex|karen|daniel|moira|tessa|fiona|google (us|uk) english|microsoft (zira|aria|jenny|guy|david))/i;
+  function pickVoice(){
+    if(!canSpeak) return;
+    const en = speechSynthesis.getVoices().filter(v=>/^en[-_]?/i.test(v.lang||""));
+    enVoice = en.find(v=>v.default)
+           || en.find(v=>PLAIN.test(v.name||""))
+           || en.find(v=>/^en[-_]us/i.test(v.lang) && v.localService)
+           || en.find(v=>/^en[-_]us/i.test(v.lang))
+           || en.find(v=>v.localService) || en[0] || null;
+  }
+  function speakable(t){
+    return String(t)
+      .replace(/[\u{1F000}-\u{1FAFF}\u{FE0F}\u{20E3}]/gu," ")   // emoji are not words
+      .replace(/[×✕]/g," times ").replace(/÷/g," divided by ")     // …and sums should be read as sums
+      .replace(/−/g," minus ").replace(/\+/g," plus ").replace(/=/g," equals ")
+      .replace(/[\u{2190}-\u{2BFF}]/gu," ")                       // arrows, chess pieces, dingbats
+      .replace(/\s*[—–]\s*/g,", ")
+      .replace(/\s+/g," ").trim();
+  }
+  function speak(t){
+    if(!canSpeak || !voiceOn) return;
+    const words = speakable(t);
+    if(!words) return;
+    try{
+      if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(words);
+      if(enVoice) u.voice = enVoice;
+      u.lang = (enVoice && enVoice.lang) || "en-US";
+      u.rate = .95; u.pitch = 1.05;
+      speechSynthesis.speak(u);
+    }catch(e){/* no voice available: the words are on screen anyway */}
+  }
+  function setVoice(on){
+    voiceOn = on;
+    const b=$("vox");
+    b.textContent = on ? "🔊" : "🔇";
+    b.setAttribute("aria-pressed", String(on));
+    if(!on && canSpeak) try{ speechSynthesis.cancel(); }catch(e){}
+    try{ localStorage.setItem(VOICE, on?"on":"off"); }catch(e){}
+  }
+  function loadVoice(){
+    if(!canSpeak){ $("vox").hidden = true; return; }
+    let on = true;
+    try{ on = localStorage.getItem(VOICE) !== "off"; }catch(e){}
+    setVoice(on);
+    pickVoice();
+    if(typeof speechSynthesis.addEventListener === "function")
+      speechSynthesis.addEventListener("voiceschanged", pickVoice);
   }
 
   /* ---------- small helpers ---------- */
@@ -645,7 +707,7 @@
 
   /* solved! give the souvenir, celebrate, point at the door */
   function solve(item, title, body){
-    S.solved[S.room]=true; give(item); confetti();
+    S.solved[S.room]=true; give(item); confetti(); speak(title);
     open('<h2>'+title+'</h2><div style="font-size:56px">'+item+'</div><p>'+body+'</p>'+
          '<div class="row"><button class="btn" data-close>Open the door!</button></div>');
     say("The door is unlocked now — tap it!");
@@ -7961,6 +8023,7 @@
     S.keys=S.furthest; drawProgress();
     if(S.room===ROOMS.length-1){ confetti(); finish(); return; }
     if(first) confetti();
+    speak(first ? "Star key "+S.keys+" of "+ROOMS.length : "Through you go");
     open((first
         ? '<h2>Star key '+S.keys+' of '+ROOMS.length+'</h2><p>The door swings open…</p>'
         : '<h2>Through you go</h2><p>This door was already open to you.</p>')+
@@ -7969,6 +8032,7 @@
   }
 
   function finish(){
+    speak("You escaped! All one hundred rooms!");
     open('<h2>You escaped</h2>'+
       '<div class="tally"><b>'+ROOMS.length+'</b><span>rooms</span>'+
       '<b>'+ROOMS.length+'</b><span>star keys</span></div>'+
@@ -8223,13 +8287,18 @@
     if(e.key==="Escape" && !scrim.hidden && !card.querySelector("[data-start]")) close();
   });
 
+  $("vox").addEventListener("click", ()=>{
+    setVoice(!voiceOn);
+    if(voiceOn) speak("Sound on!");
+  });
+
   $("jump").addEventListener("click", ()=>{
     if(card.querySelector("[data-start]")) return;   // the start screen is already a room map
     roomPicker();
   });
 
   /* ---------- boot ---------- */
-  loadSave(); S.keys=S.furthest; restoreBag(); drawProgress(); render(); startScreen();
+  loadSave(); loadVoice(); S.keys=S.furthest; restoreBag(); drawProgress(); render(); startScreen();
 })();
 </script>
 </body>

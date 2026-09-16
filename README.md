@@ -181,6 +181,10 @@ is one extra thing to poke at in each room, just for fun.
   100 rooms out by tier so you can see the shape of the climb.
 - **Rooms** in the header opens that same map at any time: every room you have
   reached stays open, so you can go back to an earlier one and play it again.
+- The sound effects are spoken out loud in English — "Click-clack!", "Beep-boop,
+  course set!", "Eight plus two plus one equals eleven!" — in an English voice
+  picked on purpose, so a machine set to another language still reads them as
+  English. 🔊 in the header turns the voice off and on, and it remembers.
 - Big tap targets, emoji and SVG art, no text a 6-year-old can't skip.
 - Nothing is ever lost — wrong answers wiggle, and every puzzle can be reset.
 - Progress is saved, so you can close the tab and **Continue** later. The star
